@@ -2,11 +2,9 @@ name: Docker Image Test
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   test:
@@ -21,9 +19,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker.io
 
+          # Start Docker service
+          sudo service docker start || sudo systemctl start docker
+
       - name: Build Docker image
-        run: sudo docker build -t greenmeteor/humhub-image .
+        run: |
+          docker build -t greenmeteor/humhub-image .
 
       - name: Test Docker image
         run: |
-          sudo docker run --rm greenmeteor/humhub-image echo "Docker image test successful"
+          docker run --rm greenmeteor/humhub-image echo "Docker image test successful"
