@@ -25,7 +25,8 @@ jobs:
 
       - name: Install dependencies for HumHub
         run: |
-          apt-get update && apt-get install -y \
+          sudo apt-get update
+          sudo apt-get install -y \
             curl \
             unzip \
             zip \
@@ -39,8 +40,8 @@ jobs:
             php-xml \
             php-zip \
             default-mysql-client \
-            redis-tools \
-            # Add any other dependencies needed by HumHub
+            redis-tools
+          # Add any other dependencies needed by HumHub
 
       - name: Build Docker image
         run: docker build -t GreenMeteor/humhub-image .
@@ -52,7 +53,6 @@ jobs:
         run: sleep 30
 
       # Add your test steps here
-      # Example: Run curl command to test if HumHub is accessible
       - name: Test HumHub accessibility
         run: curl -v http://localhost:8080  # Replace with your test commands
 
