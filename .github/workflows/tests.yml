@@ -1,0 +1,47 @@
+name: Docker Tests
+
+on:
+  pull_request:
+    branches:
+      - main  # Change this to your main branch name
+  push:
+    branches:
+      - main  # Change this to your main branch name
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:19.03.12
+        options: --privileged
+        ports:
+          - 8080:80  # Expose ports needed for testing
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies for HumHub
+        run: |
+          # Install specific requirements for HumHub here
+          # Example: Install curl for testing purposes
+          apt-get update && apt-get install -y curl
+
+      - name: Build Docker image
+        run: docker build -t GreenMeteor/humhub-image .
+
+      - name: Start Docker container
+        run: docker run -d -p 8080:80 --name humhub-container GreenMeteor/humhub-image
+
+      - name: Wait for container to start
+        run: sleep 30
+
+      # Add your test steps here
+      # Example: Run curl command to test if HumHub is accessible
+      - name: Test HumHub accessibility
+        run: curl -v http://localhost:8080  # Replace with your test commands
+
+      - name: Stop and remove Docker container
+        run: docker stop humhub-container && docker rm humhub-container
