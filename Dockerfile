@@ -26,8 +26,8 @@ RUN apt-get update && apt-get install -y \
 # Download and install HumHub
 WORKDIR /tmp
 RUN curl -L -o humhub.zip $HUMHUB_URL \
-    && unzip humhub.zip -d /tmp/humhub \
-    && mv /tmp/humhub/* $HUMHUB_DIR \
+    && unzip humhub.zip -d humhub \
+    && mv humhub/* $HUMHUB_DIR \
     && chown -R www-data:www-data $HUMHUB_DIR \
     && chmod -R 755 $HUMHUB_DIR \
     && rm humhub.zip
