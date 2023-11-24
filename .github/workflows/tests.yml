@@ -25,9 +25,24 @@ jobs:
 
       - name: Install dependencies for HumHub
         run: |
-          # Install specific requirements for HumHub here
-          # Example: Install curl for testing purposes
-          apt-get update && apt-get install -y curl
+          apt-get update && apt-get install -y \
+            curl \
+            unzip \
+            zip \
+            git \
+            php \
+            php-cli \
+            php-curl \
+            php-gd \
+            php-intl \
+            php-mbstring \
+            php-mysql \
+            php-xml \
+            php-zip \
+            php-redis \
+            mysql-client \
+            redis-tools \
+            # Add any other dependencies needed by HumHub
 
       - name: Build Docker image
         run: docker build -t GreenMeteor/humhub-image .
