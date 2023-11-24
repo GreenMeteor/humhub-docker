@@ -30,7 +30,6 @@ jobs:
             unzip \
             zip \
             git \
-            php \
             php-cli \
             php-curl \
             php-gd \
@@ -39,8 +38,7 @@ jobs:
             php-mysql \
             php-xml \
             php-zip \
-            php-redis \
-            mysql-client \
+            default-mysql-client \
             redis-tools \
             # Add any other dependencies needed by HumHub
 
