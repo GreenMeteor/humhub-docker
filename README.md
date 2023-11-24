@@ -61,4 +61,8 @@ The `docker-compose.yml` file uses environment variables to configure the servic
 - **Development/Testing**: For development or testing purposes, MailHog and other services can be substituted for the system mailer or Redis.
 
 ## Notice
-**No License Expected**: This repository is provided without a specified license. You may use, modify, or distribute the code solely for personal or internal purposes. No license is granted for any commercial use or redistribution of this code.
+
+**No License Expected**: This project is not licensed, which means no permissions are granted for modifications, distribution, or any use of the code. This repository is provided as-is, without warranty or support.
+
+> **Note:** Without a specified license, default copyright laws apply, allowing viewing of the code but not granting any permissions for usage, modification, or distribution. Any use of the code should be done in compliance with applicable laws.
+
