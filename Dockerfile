@@ -5,6 +5,7 @@ FROM php:8.1-apache
 ENV HUMHUB_VERSION=1.15.0 \
     HUMHUB_URL=https://download.humhub.com/downloads/install/humhub-$HUMHUB_VERSION.zip \
     HUMHUB_DIR=/var/www/html
+    HUMHUB_FOLDER=/var/www/html/humhub
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -26,8 +27,8 @@ RUN apt-get update && apt-get install -y \
 # Download and install HumHub
 WORKDIR /tmp
 RUN curl -L -o humhub.zip $HUMHUB_URL \
-    && unzip humhub.zip -d humhub \
-    && mv humhub/* $HUMHUB_DIR \
+    && unzip humhub.zip -d $HUMHUB_FOLDER \
+    && mv humhub_folder/* $HUMHUB_DIR \
     && chown -R www-data:www-data $HUMHUB_DIR \
     && chmod -R 755 $HUMHUB_DIR \
     && rm humhub.zip
