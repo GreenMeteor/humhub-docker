@@ -7,33 +7,27 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:80"
-    depends_on:
-      - humhub_db
-      - redis
     environment:
-      - MYSQL_HOST=humhub_db
-      - MYSQL_DATABASE=humhub
-      - MYSQL_USER=humhubuser
-      - MYSQL_PASSWORD=yourpassword
-      - HUMHUB_DIRECTORY=html
-      - SMTP_HOST=host.docker.internal
-      - SMTP_PORT=25
-      - REDIS_HOST=redis
-    volumes:
-      - humhub_data:/var/www/html
+      MYSQL_HOST: "mysql"
+      MYSQL_DATABASE: "humhub"
+      MYSQL_USER: "humhub"
+      MYSQL_PASSWORD: "password"
+      HUMHUB_DIRECTORY: "/var/www/html"
+      SMTP_HOST: "smtp.mailtrap.io"
+      SMTP_PORT: "2525"
+      REDIS_HOST: "redis"
 
-  humhub_db:
+  mysql:
     image: mysql:5.7
     environment:
-      - MYSQL_DATABASE=humhub
-      - MYSQL_USER=humhubuser
-      - MYSQL_PASSWORD=yourpassword
-      - MYSQL_ROOT_PASSWORD=yourrootpassword
+      MYSQL_DATABASE: "humhub"
+      MYSQL_USER: "humhub"
+      MYSQL_PASSWORD: "password"
     volumes:
       - humhub_db_data:/var/lib/mysql
 
   redis:
-    image: redis:latest
+    image: redis
 
 volumes:
   humhub_data:
