@@ -28,7 +28,7 @@ WORKDIR /tmp
 RUN curl -L -o humhub.zip $HUMHUB_URL \
     && unzip humhub.zip -d humhub_folder \
     && ls -la humhub_folder \
-    && mv humhub_folder/* $HUMHUB_DIR \
+    && cp -R humhub_folder/. $HUMHUB_DIR \
     && ls -la $HUMHUB_DIR \
     && chown -R www-data:www-data $HUMHUB_DIR \
     && chmod -R 755 $HUMHUB_DIR \
