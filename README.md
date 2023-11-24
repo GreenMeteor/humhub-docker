@@ -1,4 +1,5 @@
 # HumHub Docker Setup
+[![Dockerfile Test](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml/badge.svg?event=push)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml)
 
 This repository contains a Docker setup for running HumHub, an open-source social networking platform, along with MySQL, Redis, and SMTP mailer within Docker containers.
 
