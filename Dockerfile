@@ -19,13 +19,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and install HumHub
-RUN curl -L -o /tmp/humhub.tar.gz $HUMHUB_URL \
-    && tar -xzf /tmp/humhub.tar.gz -C /tmp \
-    && rm /tmp/humhub.tar.gz \
-    && mv /tmp/humhub-$HUMHUB_VERSION/* $HUMHUB_DIR \
+WORKDIR /tmp
+RUN curl -L -o humhub.tar.gz $HUMHUB_URL \
+    && tar -xzf humhub.tar.gz \
+    && mv humhub-$HUMHUB_VERSION/* $HUMHUB_DIR \
     && chown -R www-data:www-data $HUMHUB_DIR \
-    && chmod -R 755 $HUMHUB_DIR \
-    && rm -rf /tmp/humhub-$HUMHUB_VERSION
+    && chmod -R 755 $HUMHUB_DIR
 
 # Expose ports
 EXPOSE 80
