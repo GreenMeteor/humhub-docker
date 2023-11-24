@@ -24,7 +24,8 @@ RUN curl -L -o humhub.tar.gz $HUMHUB_URL \
     && tar -xzf humhub.tar.gz \
     && mv humhub-$HUMHUB_VERSION/* $HUMHUB_DIR \
     && chown -R www-data:www-data $HUMHUB_DIR \
-    && chmod -R 755 $HUMHUB_DIR
+    && chmod -R 755 $HUMHUB_DIR \
+    && rm -rf /tmp/*
 
 # Expose ports
 EXPOSE 80
