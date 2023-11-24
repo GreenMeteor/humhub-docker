@@ -2,9 +2,9 @@ name: Dockerfile Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -22,8 +22,9 @@ jobs:
         continue-on-error: true
 
       - name: Check Docker build status
-        run: docker inspect humhub-test
-        continue-on-error: true
+        run: docker inspect humhub-test || true
 
       - name: Verify Docker image
-        run: docker run --rm humhub-test php -v
+        run: |
+          docker run --rm humhub-test php -v || exit 1
+          docker run --rm humhub-test apache2 -v || exit 1
