@@ -34,6 +34,19 @@ jobs:
           docker run --rm humhub-test php -v || echo "PHP verification failed"
           docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
 
+      - name: Check PHP Version in Dockerfile
+        id: check-php-version
+        run: |
+          PHP_VERSION=$(docker inspect --format='{{index .Config.Labels "org.opencontainers.image.source"}}' humhub-test | grep -oP '(?<=FROM php:)([0-9]+\.[0-9]+)')
+          if [ "$PHP_VERSION" != "8.1" ]; then
+            echo "Invalid PHP version detected in the Dockerfile. Expected version: 8.1"
+            exit 1
+          fi
+
       - name: Cleanup
         run: |
           docker image rm humhub-test || true
+
+      - name: Set failed status if PHP version check failed
+        if: ${{ failure() || steps.check-php-version.outcome == 'failure' }}
+        run: exit 1  # Set the workflow status to failed if PHP version check failed
