@@ -33,3 +33,7 @@ jobs:
         run: |
           docker run --rm humhub-test php -v || echo "PHP verification failed"
           docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
+
+      - name: Cleanup
+        run: |
+          docker image rm humhub-test || true
