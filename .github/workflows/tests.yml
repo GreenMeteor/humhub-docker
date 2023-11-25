@@ -14,15 +14,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Validate Dockerfile
-        run: docker build -t humhub-test -f Dockerfile .
+        run: |
+          docker build --platform=linux/amd64 -t humhub-test -f Dockerfile .
         continue-on-error: true
 
       - name: Check Docker build status
-        run: docker inspect humhub-test || true
+        run: |
+          docker inspect humhub-test || true
 
       - name: Verify Docker image
         run: |
