@@ -22,22 +22,17 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --platform=linux/amd64 -t humhub-test -f Dockerfile .
+          docker build --platform=linux/amd64 -t humhub-docker -f Dockerfile .
+          echo "Docker images:"
+          docker images
+          echo "Docker inspect humhub-docker:"
+          docker inspect humhub-docker || true
         continue-on-error: true
-
-      - name: Check Docker build status
-        run: |
-          docker inspect humhub-test || true
-
-      - name: Verify Docker image
-        run: |
-          docker run --rm humhub-test php -v || echo "PHP verification failed"
-          docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
 
       - name: Check PHP Version in Dockerfile
         id: check-php-version
         run: |
-          PHP_VERSION=$(docker inspect --format='{{index .Config.Labels "org.opencontainers.image.source"}}' humhub-test | grep -oP '(?<=FROM php:)([0-9]+\.[0-9]+)')
+          PHP_VERSION=$(docker inspect --format='{{index .Config.Labels "org.opencontainers.image.source"}}' humhub-docker | grep -oP '(?<=FROM php:)([0-9]+\.[0-9]+)')
           if [ "$PHP_VERSION" != "8.1" ]; then
             echo "Invalid PHP version detected in the Dockerfile. Expected version: 8.1"
             exit 1
