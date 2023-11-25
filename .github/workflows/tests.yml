@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: node:latest  # Use the latest Node.js container
 
     steps:
       - name: Checkout code
@@ -34,6 +35,12 @@ jobs:
           docker run --rm humhub-test php -v || echo "PHP verification failed"
           docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
 
+      - name: Set build status output
+        id: build_status
+        run: echo "::set-output name=build_status::success"  # Example output, replace as needed
+
       - name: Cleanup
         run: |
           docker image rm humhub-test || true
+
+  # Optionally, you can add more jobs or steps as needed here.
