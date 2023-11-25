@@ -1,5 +1,8 @@
-# Use a base image with PHP 8.1 and Apache
-FROM php:8.1-apache
+# Set default PHP version
+ARG PHP_VERSION=8.1
+
+# Use a base image with the specified PHP version and Apache
+FROM php:${PHP_VERSION}-apache
 
 # Arguments for customizable installation path
 ARG INSTALL_PATH=/var/www/html
