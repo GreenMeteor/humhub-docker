@@ -8,7 +8,8 @@ FROM php:${PHP_VERSION}-apache
 ARG INSTALL_PATH=/var/www/html
 ENV HUMHUB_VERSION=1.15.0 \
     HUMHUB_URL=https://download.humhub.com/downloads/install/humhub-$HUMHUB_VERSION.zip \
-    HUMHUB_DIR=$INSTALL_PATH
+    HUMHUB_DIR=$INSTALL_PATH \
+    HUMHUB_FOLDER=humhub_folder
 
 # Install dependencies
 RUN set -eux; \
@@ -37,13 +38,11 @@ RUN if [ -n "$SUBDIR_PATH" ]; then \
 # Download and install HumHub
 WORKDIR /tmp
 RUN curl -L -o humhub.zip $HUMHUB_URL \
-    && unzip humhub.zip -d humhub_folder \
-    && ls -la humhub_folder \
-    && cp -R humhub_folder/. "$HUMHUB_DIR/$SUBDIR_PATH" \
-    && ls -la "$HUMHUB_DIR/$SUBDIR_PATH" \
+    && unzip humhub.zip -d "$HUMHUB_FOLDER" \
+    && cp -R "$HUMHUB_FOLDER"/. "$HUMHUB_DIR/$SUBDIR_PATH" \
     && chown -R www-data:www-data "$HUMHUB_DIR" \
     && chmod -R 755 "$HUMHUB_DIR" \
-    && rm humhub.zip && rm -rf humhub_folder
+    && rm humhub.zip && rm -rf "$HUMHUB_FOLDER"
 
 # Expose ports
 EXPOSE 80
