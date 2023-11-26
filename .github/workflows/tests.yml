@@ -14,14 +14,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-        with:
-          image: 'multiarch/qemu-user-static'
-
       - name: Clear QEMU Cache
         run: |
           sudo rm /usr/bin/qemu-*-static
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
       - name: Reset QEMU Setup
         run: |
