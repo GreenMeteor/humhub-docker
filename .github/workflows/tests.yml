@@ -16,6 +16,16 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+        with:
+          image: 'multiarch/qemu-user-static'
+
+      - name: Clear QEMU Cache
+        run: |
+          sudo rm /usr/bin/qemu-*-static
+
+      - name: Reset QEMU Setup
+        run: |
+          sudo apt-get update && sudo apt-get install -y qemu-user-static
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
