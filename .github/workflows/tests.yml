@@ -14,24 +14,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Clear QEMU Cache
-        run: |
-          sudo rm /usr/bin/qemu-*-static
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-        with:
-          image: 'multiarch/qemu-user-static'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Validate Dockerfile
-        id: build
         run: |
-          docker buildx create --name mybuilder --use
-          docker buildx inspect mybuilder --bootstrap
-          docker buildx build --platform=linux/amd64 -t humhub-test -f Dockerfile .
+          docker build --platform=linux/amd64 -t humhub-test -f Dockerfile .
         continue-on-error: true
 
       - name: Check Docker build status
@@ -39,7 +30,6 @@ jobs:
           docker inspect humhub-test || true
 
       - name: Verify Docker image
-        if: steps.build.outcome == 'success'
         run: |
           docker run --rm humhub-test php -v || echo "PHP verification failed"
           docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
