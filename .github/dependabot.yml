@@ -1,0 +1,9 @@
+version: 2
+updates:
+  - package-ecosystem: "docker" # Specifies Docker as the package ecosystem
+    directory: "/" # Replace with the directory where your Dockerfiles are located
+    schedule:
+      interval: "weekly" # Adjust update frequency as needed (daily, weekly, monthly)
+    ignore:
+      - dependency-name: "node" # Ignore updates for specific dependencies if needed
+        versions: ["10.x", "12.x"] # Specify versions to ignore
