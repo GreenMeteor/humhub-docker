@@ -16,13 +16,17 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+        with:
+          image: 'multiarch/qemu-user-static'
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Validate Dockerfile
         run: |
-          docker build --platform=linux/amd64 -t humhub-test -f Dockerfile .
+          docker buildx create --name mybuilder --use
+          docker buildx inspect mybuilder --bootstrap
+          docker buildx build --platform=linux/amd64 -t humhub-test -f Dockerfile .
         continue-on-error: true
 
       - name: Check Docker build status
