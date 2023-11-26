@@ -14,16 +14,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Clear QEMU Cache
-        run: |
-          sudo rm /usr/bin/qemu-arm-static /usr/bin/qemu-aarch64-static /usr/bin/qemu-ppc64le-static /usr/bin/qemu-s390x-static
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-
-      - name: Reset QEMU Setup
-        run: |
-          sudo apt-get update && sudo apt-get install -y qemu-user-static
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
