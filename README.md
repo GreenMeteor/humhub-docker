@@ -2,11 +2,11 @@
 
 [![Dockerfile Test](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml/badge.svg?event=push)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml)
 
-This Dockerfile sets up a PHP 8.1 Apache environment and installs HumHub 1.15.0.
+This Dockerfile sets up a PHP 8.2 Apache environment and installs HumHub 1.15.0.
 
 ### Instructions:
 
-1. **Base Image**: Uses `php:8.1-apache` as the base image.
+1. **Base Image**: Uses `php:8.2-apache` as the base image.
 
 2. **Dependencies Installation**:
     - Installs necessary packages via `apt-get`.
