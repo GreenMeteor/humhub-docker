@@ -1,19 +1,8 @@
 # Set default PHP version
-ARG PHP_VERSION=8.1
-
-# Use a base image with the specified PHP version and Apache
-FROM php:${PHP_VERSION}-apache
-
-# Arguments for customizable installation path
-ARG INSTALL_PATH=/var/www/html
-ENV HUMHUB_VERSION=1.15.0 \
-    HUMHUB_URL=https://download.humhub.com/downloads/install/humhub-$HUMHUB_VERSION.zip \
-    HUMHUB_DIR=$INSTALL_PATH \
-    HUMHUB_FOLDER=humhub_folder
+FROM php:8.1-apache
 
 # Install dependencies
-RUN set -eux; \
-    apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     libpng-dev \
@@ -29,26 +18,23 @@ RUN set -eux; \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
-# Create subdirectory structure if passed as an argument
-ARG SUBDIR_PATH
-RUN if [ -n "$SUBDIR_PATH" ]; then \
-    mkdir -p "$HUMHUB_DIR/$SUBDIR_PATH"; \
-    fi
+# Create directory structure
+RUN mkdir -p /var/www/html
 
 # Download and install HumHub
 WORKDIR /tmp
-RUN curl -L -o humhub.zip $HUMHUB_URL \
-    && unzip humhub.zip -d "$HUMHUB_FOLDER" \
-    && cp -R "$HUMHUB_FOLDER"/. "$HUMHUB_DIR/$SUBDIR_PATH" \
-    && chown -R www-data:www-data "$HUMHUB_DIR" \
-    && chmod -R 755 "$HUMHUB_DIR" \
-    && rm humhub.zip && rm -rf "$HUMHUB_FOLDER"
+RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1.15.0.zip \
+    && unzip humhub.zip -d /tmp/humhub_folder \
+    && cp -R /tmp/humhub_folder/. /var/www/html \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && rm humhub.zip && rm -rf /tmp/humhub_folder
 
 # Expose ports
 EXPOSE 80
 
 # Define the working directory
-WORKDIR "$HUMHUB_DIR/$SUBDIR_PATH"
+WORKDIR /var/www/html
 
 # Start Apache service
 CMD ["apache2-foreground"]
