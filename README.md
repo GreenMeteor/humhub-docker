@@ -2,57 +2,42 @@
 
 [![Dockerfile Test](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml/badge.svg?event=push)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml)
 
-This Dockerfile sets up a PHP environment with Apache and installs HumHub, a social network platform.
+This Dockerfile sets up a PHP 8.1 Apache environment and installs HumHub 1.15.0.
 
-### Usage
+### Instructions:
 
-To build the Docker image, ensure the HumHub zip file (`humhub-1.15.0.zip`) is present in the same directory as this Dockerfile.
+1. **Base Image**: Uses `php:8.1-apache` as the base image.
 
-```bash
-docker build -t your_image_name --build-arg HUMHUB_FOLDER=custom_humhub_folder .
-```
+2. **Dependencies Installation**:
+    - Installs necessary packages via `apt-get`.
+    - Configures PHP extensions for `gd`, `mysqli`, `pdo`, `zip`, `intl`, `ldap`, `pgsql`, and more.
 
-Replace `your_image_name` with your desired image name/tag. Adjust `HUMHUB_FOLDER` to specify the HumHub folder name during the build process.
+3. **Directory Creation**:
+    - Creates the directory structure: `/var/www/html` for HumHub installation.
 
-### Details
+4. **HumHub Installation**:
+    - Downloads HumHub version 1.15.0 using `curl`.
+    - Unzips the downloaded file to `/tmp/humhub_folder`.
+    - Copies HumHub contents to `/var/www/html`.
+    - Adjusts ownership and permissions for `/var/www/html`.
+    - Cleans up downloaded files and temporary folders.
 
-#### Base Image
-- **PHP Version**: 8.1
-- **Apache**: Included in the PHP image
+5. **Exposing Ports**:
+    - Exposes port `80` for HTTP traffic.
 
-#### Environment Variables
-- `HUMHUB_VERSION`: HumHub version to be installed (default: 1.15.0)
-- `HUMHUB_URL`: URL to download HumHub zip file
-- `HUMHUB_DIR`: Installation path for HumHub (default: /var/www/html)
-- `HUMHUB_FOLDER`: Folder name to extract HumHub files during installation (default: humhub_folder)
+6. **Working Directory**:
+    - Sets `/var/www/html` as the working directory.
 
-#### Installation Steps
-1. **Dependencies Installation**:
-   - Updates and installs required packages using apt-get
-   - Installs PHP extensions necessary for HumHub (GD, mysqli, pdo, pdo_mysql, zip, intl, ldap, pgsql, pdo_pgsql)
-   - Enables Apache's rewrite module
+7. **Starting Service**:
+    - Initiates the Apache service using `apache2-foreground`.
 
-2. **HumHub Installation**:
-   - Downloads the HumHub zip file specified in `HUMHUB_URL`
-   - Unzips the file into the folder specified in `HUMHUB_FOLDER`
-   - Copies the contents of `HUMHUB_FOLDER` to the installation directory (`HUMHUB_DIR`)
-   - Sets permissions and ownership for HumHub files
-   - Removes temporary files after installation
+### Building the Image:
 
-#### Usage in a Docker Run Command
-To start a container from the built image:
+Build the Docker image using the provided Dockerfile:
 
 ```bash
-docker run -p 8080:80 your_image_name
+docker build -t humhub-docker .
 ```
-
-This command maps port 8080 on your host machine to port 80 on the container.
-
-Adjust the port mapping (`-p`) as needed.
-
-### Notes
-- Customize the `HUMHUB_FOLDER` variable during the build process to specify the folder name for HumHub.
-- Ensure the HumHub zip file is present in the same directory when building the image.
 
 ### Notice
 > No License Expected: This project is not licensed, which means no permissions are granted for modifications, distribution, or any use of the code. This repository is provided as-is, without warranty or support.
