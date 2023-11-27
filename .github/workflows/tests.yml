@@ -21,19 +21,20 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Validate Dockerfile
+        id: build
         run: |
           docker build --platform=linux/amd64 -t humhub-test -f Dockerfile .
-        continue-on-error: true
+          echo "::set-output name=image_name::humhub-test"
 
       - name: Check Docker build status
         run: |
-          docker inspect humhub-test || true
+          docker inspect ${{ steps.build.outputs.image_name }} || true
 
       - name: Verify Docker image
         run: |
-          docker run --rm humhub-test php -v || echo "PHP verification failed"
-          docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
+          docker run --rm ${{ steps.build.outputs.image_name }} php -v || echo "PHP verification failed"
+          docker run --rm ${{ steps.build.outputs.image_name }} apache2 -v || echo "Apache verification failed"
 
       - name: Cleanup
         run: |
-          docker image rm humhub-test || true
+          docker image rm ${{ steps.build.outputs.image_name }} || true
