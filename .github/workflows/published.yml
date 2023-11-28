@@ -25,24 +25,17 @@ jobs:
         id: get_version
         run: echo "::set-output name=VERSION::${{ github.event.release.tag_name }}"
       
-      - name: Pull existing image tags
+      - name: Pull existing image
         run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
           docker pull archblood/humhub-docker:$VERSION || true
-          echo "::set-output name=EXISTING_IMAGE::archblood/humhub-docker:$VERSION"
       
       - name: Update or create Docker image tag
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
-          EXISTING_IMAGE="${{ steps.get_existing_tags.outputs.EXISTING_IMAGE }}"
           NEW_TAG="archblood/humhub-docker:$VERSION"
           
-          if [[ -n "$EXISTING_IMAGE" ]]; then
-            docker tag $EXISTING_IMAGE $NEW_TAG
-          else
-            echo "Image not found: $EXISTING_IMAGE"
-            exit 1
-          fi
-          
+          docker tag archblood/humhub-docker:$VERSION $NEW_TAG
           docker push $NEW_TAG
       
       - name: Cleanup
