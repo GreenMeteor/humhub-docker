@@ -1,48 +1,31 @@
-name: Update Docker image with Release Tag
+name: Build and Push Docker Image on Release
 
 on:
   release:
     types: [published]
 
 jobs:
-  update_registry:
-    name: Update Docker image on Docker Hub
+  build-and-push:
+    name: Build and Push
     runs-on: ubuntu-latest
-    env:
-      GITHUB_REF: ${{ github.ref }}
+
+    outputs:
+      release_version: ${{ github.event.release.tag_name }}
 
     steps:
-      - name: Check out the repo
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set output with release version
-        id: get_version
+      - name: Build Docker image
         run: |
-          echo "::set-output name=VERSION::${{ github.event.release.tag_name }}"
-
-      - name: Pull existing image
+          docker build -t archblood/humhub-docker:${{ github.event.release.tag_name }} .
+        
+      - name: Push Docker image to Docker Hub
         run: |
-          VERSION="${{ steps.get_version.outputs.VERSION }}"
-          echo "Pulling Image with Version: $VERSION"
-          docker pull archblood/humhub-docker:$VERSION || true
-
-      - name: Create tag and push based on release
-        run: |
-          VERSION="${{ steps.get_version.outputs.VERSION }}"
-          NEW_TAG="archblood/humhub-docker:$VERSION"
-          echo "New Tag: $NEW_TAG"
-          
-          docker tag archblood/humhub-docker:$VERSION $NEW_TAG
-          docker push $NEW_TAG
-
-      - name: Cleanup if tag does not exist
-        run: |
-          VERSION="${{ steps.get_version.outputs.VERSION }}"
-          echo "Cleaning up Image with Version: $VERSION"
-          docker image rm archblood/humhub-docker:$VERSION || true
+          docker push archblood/humhub-docker:${{ github.event.release.tag_name }}
