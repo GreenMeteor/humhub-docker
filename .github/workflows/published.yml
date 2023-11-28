@@ -23,28 +23,29 @@ jobs:
       
       - name: Get release version
         id: get_version
-        run: echo "::set-output name=VERSION::${GITHUB_REF#refs/tags/}"
-        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "::set-output name=VERSION::${{ github.event.release.tag_name }}"
       
-      - name: Get existing image tags
-        id: get_existing_tags
+      - name: Pull existing image tags
         run: |
-          docker pull archblood/humhub-docker:v1.0 || true
-          echo "::set-output name=EXISTING_TAGS::$(docker inspect --format='{{ join .RepoTags "," }}' archblood/humhub-docker)"
+          docker pull archblood/humhub-docker:$VERSION || true
+          echo "::set-output name=EXISTING_IMAGE::archblood/humhub-docker:$VERSION"
       
       - name: Update or create Docker image tag
         run: |
-          EXISTING_TAGS="${{ steps.get_existing_tags.outputs.EXISTING_TAGS }}"
-          NEW_TAG="archblood/humhub-docker:v1.0" # Update the tag here
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          EXISTING_IMAGE="${{ steps.get_existing_tags.outputs.EXISTING_IMAGE }}"
+          NEW_TAG="archblood/humhub-docker:$VERSION"
           
-          if [[ $EXISTING_TAGS == *"v1.0"* ]]; then
-            docker tag archblood/humhub-docker:v1.0 $NEW_TAG
+          if [[ -n "$EXISTING_IMAGE" ]]; then
+            docker tag $EXISTING_IMAGE $NEW_TAG
           else
-            docker tag archblood/humhub-docker:v1.0 $NEW_TAG # Ensure using v1.0 consistently
+            echo "Image not found: $EXISTING_IMAGE"
+            exit 1
           fi
           
           docker push $NEW_TAG
       
       - name: Cleanup
         run: |
-          docker image rm archblood/humhub-docker:v1.0 || true
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          docker image rm archblood/humhub-docker:$VERSION || true
