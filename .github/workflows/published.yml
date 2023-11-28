@@ -35,10 +35,10 @@ jobs:
       - name: Update or create Docker image tag
         run: |
           EXISTING_TAGS="${{ steps.get_existing_tags.outputs.EXISTING_TAGS }}"
-          NEW_TAG="archblood/humhub-docker:${{ steps.get_version.outputs.VERSION }}"
+          NEW_TAG="archblood/humhub-docker:v1.0" # Update the tag here
           
-          if [[ $EXISTING_TAGS == *"${{ steps.get_version.outputs.VERSION }}"* ]]; then
-            docker tag archblood/humhub-docker:${{ steps.get_version.outputs.VERSION }} $NEW_TAG
+          if [[ $EXISTING_TAGS == *"v1.0"* ]]; then
+            docker tag archblood/humhub-docker:v1.0 $NEW_TAG
           else
             docker tag archblood/humhub-docker:latest $NEW_TAG
           fi
