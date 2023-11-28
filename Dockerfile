@@ -1,7 +1,15 @@
 # Set default PHP version
 FROM php:8.2-apache
 
-# Install system dependencies
+# Remove existing mail-related packages
+RUN apt-get update && apt-get purge -y \
+    sendmail \
+    mailutils \
+    msmtp \
+    postfix \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install necessary system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     curl \
     unzip \
@@ -15,6 +23,12 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql \
+    && apt-get install -y libssl-dev \
+    && pecl install phpmailer \
+    && docker-php-ext-enable phpmailer \
+    && apt-get install -y git \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && composer require symfony/mailer \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
