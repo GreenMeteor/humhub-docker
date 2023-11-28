@@ -28,7 +28,9 @@ jobs:
       
       - name: Get existing image tags
         id: get_existing_tags
-        run: echo "::set-output name=EXISTING_TAGS::$(docker inspect --format='{{ join .RepoTags "," }}' archblood/humhub-docker)"
+        run: |
+          docker pull archblood/humhub-docker:latest || true
+          echo "::set-output name=EXISTING_TAGS::$(docker inspect --format='{{ join .RepoTags "," }}' archblood/humhub-docker)"
       
       - name: Update or create Docker image tag
         run: |
@@ -38,7 +40,7 @@ jobs:
           if [[ $EXISTING_TAGS == *"${{ steps.get_version.outputs.VERSION }}"* ]]; then
             docker tag archblood/humhub-docker:${{ steps.get_version.outputs.VERSION }} $NEW_TAG
           else
-            docker tag archblood/humhub-docker $NEW_TAG
+            docker tag archblood/humhub-docker:latest $NEW_TAG
           fi
           
           docker push $NEW_TAG
