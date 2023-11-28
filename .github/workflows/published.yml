@@ -29,7 +29,7 @@ jobs:
       - name: Get existing image tags
         id: get_existing_tags
         run: |
-          docker pull archblood/humhub-docker:latest || true
+          docker pull archblood/humhub-docker:v1.0 || true
           echo "::set-output name=EXISTING_TAGS::$(docker inspect --format='{{ join .RepoTags "," }}' archblood/humhub-docker)"
       
       - name: Update or create Docker image tag
@@ -47,4 +47,4 @@ jobs:
       
       - name: Cleanup
         run: |
-          docker image rm archblood/humhub-docker || true
+          docker image rm archblood/humhub-docker:v1.0 || true
