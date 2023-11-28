@@ -7,7 +7,10 @@ on:
 jobs:
   build-and-push:
     name: Build and Push
-    runs-on: ubuntu-latest
+    runs-on: 
+      - ubuntu-latest
+      - windows-latest
+      - macos-latest
 
     outputs:
       release_version: ${{ github.event.release.tag_name }}
