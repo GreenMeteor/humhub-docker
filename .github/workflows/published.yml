@@ -14,31 +14,39 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-      
+
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      - name: Get release version
+
+      - name: Set output with release version
         id: get_version
-        run: echo "::set-output name=VERSION::${{ github.event.release.tag_name }}"
-      
+        run: |
+          echo "::set-output name=VERSION::${{ github.event.release.tag_name }}"
+
+      - name: Show version
+        run: |
+          echo "Release Tag: ${{ steps.get_version.outputs.VERSION }}"
+
       - name: Pull existing image
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
+          echo "Pulling Image with Version: $VERSION"
           docker pull archblood/humhub-docker:$VERSION || true
-      
+
       - name: Update or create Docker image tag
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
           NEW_TAG="archblood/humhub-docker:$VERSION"
+          echo "New Tag: $NEW_TAG"
           
           docker tag archblood/humhub-docker:$VERSION $NEW_TAG
           docker push $NEW_TAG
-      
+
       - name: Cleanup
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
+          echo "Cleaning up Image with Version: $VERSION"
           docker image rm archblood/humhub-docker:$VERSION || true
