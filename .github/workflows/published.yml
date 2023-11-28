@@ -40,7 +40,7 @@ jobs:
           if [[ $EXISTING_TAGS == *"v1.0"* ]]; then
             docker tag archblood/humhub-docker:v1.0 $NEW_TAG
           else
-            docker tag archblood/humhub-docker:latest $NEW_TAG
+            docker tag archblood/humhub-docker:v1.0 $NEW_TAG # Ensure using v1.0 consistently
           fi
           
           docker push $NEW_TAG
