@@ -38,6 +38,3 @@ Build the Docker image using the provided Dockerfile:
 ```bash
 docker build -t humhub-docker .
 ```
-
-### Notice
-> No License Expected: This project is not licensed, which means no permissions are granted for modifications, distribution, or any use of the code. This repository is provided as-is, without warranty or support.
