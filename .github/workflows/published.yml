@@ -48,7 +48,7 @@ jobs:
             echo "::set-output name=TAG_EXISTS::false"
           fi
 
-      - name: Update or create Docker image tag
+      - name: Create tag if it doesn't exist
         if: steps.check_tag.outputs.TAG_EXISTS != 'true'
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
@@ -58,7 +58,8 @@ jobs:
           docker tag archblood/humhub-docker:$VERSION $NEW_TAG
           docker push $NEW_TAG
 
-      - name: Cleanup
+      - name: Cleanup if tag does not exist
+        if: steps.check_tag.outputs.TAG_EXISTS != 'true'
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
           echo "Cleaning up Image with Version: $VERSION"
