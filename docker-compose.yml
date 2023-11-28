@@ -24,11 +24,10 @@ services:
       MYSQL_USER: "humhub"
       MYSQL_PASSWORD: "password"
     volumes:
-      - humhub_db_data:/var/lib/mysql
+      - "humhub_db_data:/var/lib/mysql"
 
   redis:
     image: redis
 
 volumes:
-  humhub_data:
   humhub_db_data:
