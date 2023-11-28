@@ -1,4 +1,4 @@
-name: trivy
+name: Trivy
 
 on:
   push:
@@ -22,24 +22,18 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-    outputs:
-      release-tag: ${{ steps.set_release_tag.outputs.release_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set release tag as output
-        id: set_release_tag
-        run: echo "::set-output name=release_tag::${{ github.event.release.tag_name }}"
-
       - name: Build an image from Dockerfile
         run: |
-          docker build -t docker.io/archblood/humhub-docker:${{ github.event.release.tag_name }} .
+          docker build -t docker.io/archblood/humhub-docker:v1.0.0 .
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:
-          image-ref: 'docker.io/archblood/humhub-docker:${{ github.event.release.tag_name }}'
+          image-ref: 'docker.io/archblood/humhub-docker:v1.0.0'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
