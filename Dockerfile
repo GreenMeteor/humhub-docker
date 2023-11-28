@@ -4,9 +4,6 @@ FROM php:8.2-apache
 # Remove existing mail-related packages
 RUN apt-get update && apt-get purge -y \
     sendmail \
-    mailutils \
-    msmtp \
-    postfix \
     && rm -rf /var/lib/apt/lists/*
 
 # Install necessary system dependencies and PHP extensions
