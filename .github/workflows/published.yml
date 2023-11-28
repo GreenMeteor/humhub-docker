@@ -36,7 +36,20 @@ jobs:
           echo "Pulling Image with Version: $VERSION"
           docker pull archblood/humhub-docker:$VERSION || true
 
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          if docker images archblood/humhub-docker:$VERSION | awk '{print $2}' | grep -q $VERSION; then
+            echo "Tag $VERSION exists"
+            echo "::set-output name=TAG_EXISTS::true"
+          else
+            echo "Tag $VERSION does not exist"
+            echo "::set-output name=TAG_EXISTS::false"
+          fi
+
       - name: Update or create Docker image tag
+        if: steps.check_tag.outputs.TAG_EXISTS != 'true'
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
           NEW_TAG="archblood/humhub-docker:$VERSION"
