@@ -24,17 +24,17 @@ jobs:
         id: build
         run: |
           docker build --platform=linux/amd64 -t humhub-test -f Dockerfile .
-          echo "::set-output name=image_name::humhub-test"
+          echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
 
       - name: Check Docker build status
         run: |
-          docker inspect ${{ steps.build.outputs.image_name }} || true
+          docker inspect $IMAGE_NAME || true
 
       - name: Verify Docker image
         run: |
-          docker run --rm ${{ steps.build.outputs.image_name }} php -v || echo "PHP verification failed"
-          docker run --rm ${{ steps.build.outputs.image_name }} apache2 -v || echo "Apache verification failed"
+          docker run --rm $IMAGE_NAME php -v || echo "PHP verification failed"
+          docker run --rm $IMAGE_NAME apache2 -v || echo "Apache verification failed"
 
       - name: Cleanup
         run: |
-          docker image rm ${{ steps.build.outputs.image_name }} || true
+          docker image rm $IMAGE_NAME || true
