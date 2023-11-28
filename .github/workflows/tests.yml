@@ -7,11 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    runs-on: 
-      - ubuntu-latest
-      - windows-latest
-      - macos-latest
+  build-linux:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -46,6 +43,58 @@ jobs:
         run: |
           docker run --rm $IMAGE_NAME php -v || echo "PHP verification failed"
           docker run --rm $IMAGE_NAME apache2 -v || echo "Apache verification failed"
+
+      - name: Cleanup
+        run: |
+          docker image rm $IMAGE_NAME || true
+
+  build-windows:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Validate Dockerfile
+        id: build
+        run: |
+          docker build -t humhub-test -f Dockerfile .
+          echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
+
+      - name: Cleanup
+        run: |
+          docker image rm $IMAGE_NAME || true
+
+  build-macos:
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Validate Dockerfile
+        id: build
+        run: |
+          docker build -t humhub-test -f Dockerfile .
+          echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
 
       - name: Cleanup
         run: |
