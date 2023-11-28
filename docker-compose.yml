@@ -4,7 +4,7 @@ services:
   humhub:
     build:
       context: .
-      dockerfile: Dockerfile  # Assuming your updated Dockerfile with PHP 8.2 and mailers is in the same directory
+      dockerfile: Dockerfile
     ports:
       - "8080:80"
     environment:
@@ -13,20 +13,23 @@ services:
       MYSQL_USER: "humhub"
       MYSQL_PASSWORD: "password"
       HUMHUB_DIRECTORY: "/var/www/html"
-      MAILER_DSN: "sendmail://default" # Use Symfony Mailer's sendmail transport
+      MAILER_DSN: "sendmail://default"
       REDIS_HOST: "redis"
+    volumes:
+      - humhub_files:/var/www/html
 
   mysql:
-    image: mysql:5.7  # You might want to consider updating MySQL to a compatible version with PHP 8.2
+    image: mysql:5.7
     environment:
       MYSQL_DATABASE: "humhub"
       MYSQL_USER: "humhub"
       MYSQL_PASSWORD: "password"
     volumes:
-      - "humhub_db_data:/var/lib/mysql"
+      - humhub_db_data:/var/lib/mysql
 
   redis:
     image: redis
 
 volumes:
   humhub_db_data:
+  humhub_files:
