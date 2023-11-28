@@ -1,6 +1,6 @@
 # Dockerfile for HumHub Installation
 
-[![Dockerfile Test](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml/badge.svg?event=push)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml)
+[![Dockerfile Test](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml/badge.svg?event=push)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml) [![Build and Push Docker Image on Release](https://github.com/GreenMeteor/humhub-docker/actions/workflows/published.yml/badge.svg?event=release)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/published.yml)
 
 This Dockerfile sets up a PHP 8.2 Apache environment and installs HumHub 1.15.0.
 
