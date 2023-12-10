@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libldap2-dev \
     libpq-dev \
+    cron \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql \
     && a2enmod rewrite \
@@ -30,11 +31,16 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1
     && chmod -R 755 /var/www/html \
     && rm humhub.zip && rm -rf /tmp/humhub_folder
 
+# Add a cron file
+ADD crontab /etc/cron.d/humhub-cron
+RUN chmod 0644 /etc/cron.d/humhub-cron
+RUN crontab /etc/cron.d/humhub-cron
+
 # Expose ports
 EXPOSE 80
 
 # Define the working directory
 WORKDIR /var/www/html
 
-# Start Apache service
-CMD ["apache2-foreground"]
+# Start Apache service and cron in the foreground
+CMD service cron start && apache2-foreground
