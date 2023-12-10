@@ -1,0 +1,2 @@
+* * * * * www-data /usr/local/bin/php /var/www/html/protected/vendor/bin/humhub cron/run >/dev/null 2>&1
+* * * * * www-data /usr/local/bin/php /var/www/html/protected/vendor/bin/humhub cron/queue >/dev/null 2>&1
