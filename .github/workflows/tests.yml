@@ -44,6 +44,14 @@ jobs:
           docker run --rm $IMAGE_NAME php -v || echo "PHP verification failed"
           docker run --rm $IMAGE_NAME apache2 -v || echo "Apache verification failed"
 
+      - name: Copy crontab
+        run: |
+          cp crontab /tmp/crontab
+
+      - name: Check crontab
+        run: |
+          docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron $IMAGE_NAME bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "Crontab verification failed"
+
       - name: Cleanup
         run: |
           docker image rm $IMAGE_NAME || true
