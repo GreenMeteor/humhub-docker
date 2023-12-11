@@ -7,7 +7,7 @@ on:
 jobs:
   build-and-push-windows:
     name: Build and Push - Windows
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     outputs:
       release_version: ${{ github.event.release.tag_name }}
