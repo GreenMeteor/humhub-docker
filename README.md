@@ -29,7 +29,7 @@ This Dockerfile sets up a PHP 8.2 Apache environment and installs HumHub 1.15.0.
     - Sets `/var/www/html` as the working directory.
 
 7. **Starting Service**:
-    - Initiates the Apache service using `apache2-foreground`.
+    - Initiates the Apache & Cron services using `apache2-foreground` & `service cron start`.
 
 ### Building the Image:
 
