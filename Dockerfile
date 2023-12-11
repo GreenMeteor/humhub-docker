@@ -31,8 +31,8 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1
     && chmod -R 755 /var/www/html \
     && rm humhub.zip && rm -rf /tmp/humhub_folder
 
-# Add a cron file
-ADD crontab /etc/cron.d/humhub-cron
+# Copy the cron file
+COPY crontab /etc/cron.d/humhub-cron
 RUN chmod 0644 /etc/cron.d/humhub-cron
 RUN crontab /etc/cron.d/humhub-cron
 
