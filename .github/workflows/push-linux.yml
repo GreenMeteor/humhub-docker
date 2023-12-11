@@ -1,16 +1,13 @@
-name: Push Image
+name: Push Image - Linux
 
 on:
   release:
     types: [published]
 
 jobs:
-  build-and-push:
-    name: Build and Push
-    runs-on: 
-      - ubuntu-latest
-      - windows-latest
-      - macos-latest
+  build-and-push-linux:
+    name: Build and Push - Linux
+    runs-on: ubuntu-latest
 
     outputs:
       release_version: ${{ github.event.release.tag_name }}
