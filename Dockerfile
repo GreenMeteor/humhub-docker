@@ -43,4 +43,4 @@ EXPOSE 80
 WORKDIR /var/www/html
 
 # Start Apache service and cron in the foreground
-CMD service cron start && apache2-foreground
+CMD "service cron start && apache2-foreground"
