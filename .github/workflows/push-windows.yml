@@ -20,6 +20,10 @@ jobs:
         run: |
           docker build -t archblood/humhub-docker:${{ github.event.release.tag_name }} .
         
+      - name: Tag Docker image for Windows
+        run: |
+          docker tag archblood/humhub-docker:${{ github.event.release.tag_name }} archblood/humhub-docker:${{ github.event.release.tag_name }}-windows
+
       - name: Push Docker image to Docker Hub
         run: |
-          docker push archblood/humhub-docker:${{ github.event.release.tag_name }}
+          docker push archblood/humhub-docker:${{ github.event.release.tag_name }}-windows
