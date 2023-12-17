@@ -27,13 +27,18 @@ WORKDIR /tmp
 RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1.15.0.zip \
     && unzip humhub.zip -d /tmp/humhub_folder \
     && cp -R /tmp/humhub_folder/. /var/www/html \
-    && chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html \
     && rm humhub.zip && rm -rf /tmp/humhub_folder
 
+# Set ownership and permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && find /var/www/html -type d -exec chmod 755 {} + \
+    && find /var/www/html -type f -exec chmod 644 {} +
+
 # Copy the cron file
-COPY crontab /etc/cron.d/humhub-cron
+COPY --chown=root:root crontab /etc/cron.d/humhub-cron
 RUN chmod 0644 /etc/cron.d/humhub-cron
+
+# Load the cron file
 RUN crontab /etc/cron.d/humhub-cron
 
 # Expose ports
