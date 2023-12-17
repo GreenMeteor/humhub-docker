@@ -9,9 +9,6 @@ jobs:
     name: Build and Push - Windows
     runs-on: windows-latest
 
-    outputs:
-      release_version: ${{ github.event.release.tag_name }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -21,7 +18,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t archblood/humhub-docker:${{ github.event.release.tag_name }} --platform windows/amd64 .
+          docker build -t archblood/humhub-docker:${{ github.event.release.tag_name }} .
         
       - name: Push Docker image to Docker Hub
         run: |
