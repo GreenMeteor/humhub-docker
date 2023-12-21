@@ -44,11 +44,8 @@ RUN crontab /etc/cron.d/humhub-cron
 # Expose ports
 EXPOSE 80
 
-# Change directory to /protected before installing the HumHub Updater module
-WORKDIR /var/www/html/protected
-
 # Install HumHub Updater module from the marketplace
-RUN php yii module/install updater
+RUN php /var/www/html/protected/yii module/install updater
 
 # Define the working directory
 WORKDIR /var/www/html
