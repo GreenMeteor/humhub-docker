@@ -54,7 +54,9 @@ jobs:
 
       - name: Install HumHub Updater module
         run: |
-          docker exec $IMAGE_NAME php /var/www/html/protected/yii module/install updater
+          CONTAINER_ID=$(docker run -d humhub-test tail -f /dev/null)
+          docker exec $CONTAINER_ID php /var/www/html/protected/yii module/install updater
+          docker stop $CONTAINER_ID
 
       - name: Cleanup
         run: |
