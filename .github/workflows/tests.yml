@@ -52,12 +52,6 @@ jobs:
         run: |
           docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron $IMAGE_NAME bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "Crontab verification failed"
 
-      - name: Install HumHub Updater module
-        run: |
-          CONTAINER_ID=$(docker run -d humhub-test tail -f /dev/null)
-          docker exec $CONTAINER_ID php /var/www/html/protected/yii module/install updater
-          docker stop $CONTAINER_ID
-
       - name: Cleanup
         run: |
           docker image rm $IMAGE_NAME || true
