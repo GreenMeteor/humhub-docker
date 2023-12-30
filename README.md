@@ -2,11 +2,11 @@
 
 [![Dockerfile Test](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml/badge.svg?event=push)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/tests.yml) [![Push Image - Linux](https://github.com/GreenMeteor/humhub-docker/actions/workflows/push-linux.yml/badge.svg?event=release)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/push-linux.yml)
 
-This Dockerfile sets up a PHP 8.2 Apache environment and installs HumHub 1.15.0.
+This Dockerfile sets up a PHP 8.2.14 Apache environment and installs HumHub 1.15.2.
 
 ### Instructions:
 
-1. **Base Image**: Uses `php:8.2-apache` as the base image.
+1. **Base Image**: Uses `php:8.2.14-apache` as the base image.
 
 2. **Dependencies Installation**:
     - Installs necessary packages via `apt-get`.
@@ -16,7 +16,7 @@ This Dockerfile sets up a PHP 8.2 Apache environment and installs HumHub 1.15.0.
     - Creates the directory structure: `/var/www/html` for HumHub installation.
 
 4. **HumHub Installation**:
-    - Downloads HumHub version 1.15.0 using `curl`.
+    - Downloads HumHub version 1.15.2 using `curl`.
     - Unzips the downloaded file to `/tmp/humhub_folder`.
     - Copies HumHub contents to `/var/www/html`.
     - Adjusts ownership and permissions for `/var/www/html`.
