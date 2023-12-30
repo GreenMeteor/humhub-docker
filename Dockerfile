@@ -24,7 +24,7 @@ RUN mkdir -p /var/www/html
 
 # Download and install HumHub
 WORKDIR /tmp
-RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1.15.0.zip \
+RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1.15.2.zip \
     && unzip humhub.zip -d /tmp/humhub_folder \
     && cp -R /tmp/humhub_folder/. /var/www/html \
     && rm humhub.zip && rm -rf /tmp/humhub_folder
