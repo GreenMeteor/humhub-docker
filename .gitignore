@@ -1,2 +1,5 @@
 # Ignore all files and directories inside .github
 .github/*
+
+# Ignore all files and directories inside the /docs directory
+docs/*
