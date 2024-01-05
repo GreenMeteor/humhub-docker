@@ -22,7 +22,7 @@ jobs:
       - name: Validate Dockerfile
         id: build
         run: |
-          docker build --platform=darwin/amd64 -t humhub-test -f /macos/Dockerfile .
+          docker build --platform=darwin/amd64 -t humhub-test -f macos/Dockerfile .
           echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
 
       - name: Check Docker build status
