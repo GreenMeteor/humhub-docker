@@ -1,12 +1,12 @@
-name: Linux Dockerfile
+name: Test Dockerfile
 
 on:
   push:
     paths:
-      - 'linux/Dockerfile'
+      - 'src/Dockerfile'
   pull_request:
     paths:
-      - 'linux/Dockerfile'
+      - 'src/Dockerfile'
     branches:
       - main
 
@@ -36,7 +36,7 @@ jobs:
       - name: Validate Dockerfile
         id: build
         run: |
-          docker build --platform=linux/amd64 -t humhub-test -f linux/Dockerfile .
+          docker build --platform=linux/amd64 -t humhub-test -f src/Dockerfile .
           echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
 
       - name: Check Docker build status
