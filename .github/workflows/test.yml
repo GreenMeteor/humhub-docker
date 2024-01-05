@@ -43,7 +43,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           brew update
-          brew upgrade homebrew/cask/julia
+          brew upgrade --cask julia
           brew upgrade virtualbox
           brew install --cask docker
 
