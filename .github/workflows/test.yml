@@ -3,12 +3,12 @@ name: Test Dockerfile
 on:
   push:
     paths:
-      - 'src\Dockerfile'
-      - 'src\crontab'
+      - 'src/Dockerfile'
+      - 'src/crontab'
   pull_request:
     paths:
-      - 'src\Dockerfile'
-      - 'src\crontab'
+      - 'src/Dockerfile'
+      - 'src/crontab'
     branches:
       - main
 
