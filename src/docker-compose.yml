@@ -3,7 +3,7 @@ version: '3.8'
 services:
   humhub:
     build:
-      context: .
+      context: ./src
       dockerfile: Dockerfile
     ports:
       - "8080:80"
