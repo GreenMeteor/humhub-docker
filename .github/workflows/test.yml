@@ -3,19 +3,21 @@ name: Test Dockerfile
 on:
   push:
     paths:
-      - 'src/Dockerfile'
+      - 'src\Dockerfile'
   pull_request:
     paths:
-      - 'src/Dockerfile'
+      - 'src\Dockerfile'
     branches:
       - main
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [16.x]
 
     steps:
@@ -27,16 +29,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up QEMU
+      - name: Set up QEMU (not needed on Windows/macOS)
+        if: matrix.os == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
+        if: matrix.os == 'ubuntu-latest'
         uses: docker/setup-buildx-action@v1
 
       - name: Validate Dockerfile
         id: build
         run: |
-          docker build --platform=linux/amd64 -t humhub-test -f src/Dockerfile .
+          docker build -t humhub-test -f src/Dockerfile .
           echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
 
       - name: Check Docker build status
