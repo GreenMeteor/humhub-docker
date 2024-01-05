@@ -40,14 +40,13 @@ ARG USER_NAME=YourUsername
 
 # Set basic permissions for Windows (NTFS)
 RUN if [ "$(uname -s)" = "Windows" ]; then \
+        echo "Setting permissions for Windows (NTFS)"; \
         icacls "C:\Users\${USER_NAME}\humhub-docker" /t /grant 'IIS AppPool\DefaultAppPool:(OI)(CI)R'; \
     fi
 
-# Copy the cron file
+# Copy the cron file and set permissions
 COPY --chown=root:root src/crontab /etc/cron.d/humhub-cron
-
-# Load the cron file
-RUN src/crontab /etc/cron.d/humhub-cron
+RUN chmod 0644 /etc/cron.d/humhub-cron
 
 # Expose ports
 EXPOSE 80
