@@ -29,14 +29,22 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1
     && cp -R /tmp/humhub_folder/. /var/www/html \
     && rm humhub.zip && rm -rf /tmp/humhub_folder
 
-# Set ownership and permissions
+# Set ownership and permissions for Unix systems
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} + \
-    && find /var/www/html -type f -exec chmod 644 {} +
+    && find /var/www/html -type f -exec chmod 644 {} + \
+    && chmod 0644 /etc/cron.d/humhub-cron
+
+# Set a default USER_NAME if not provided during build
+ARG USER_NAME=YourUsername
+
+# Set basic permissions for Windows (NTFS)
+RUN if [ "$(uname -s)" = "Windows" ]; then \
+        icacls "C:\Users\${USER_NAME}\humhub-docker" /t /grant 'IIS AppPool\DefaultAppPool:(OI)(CI)R'; \
+    fi
 
 # Copy the cron file
 COPY --chown=root:root crontab /etc/cron.d/humhub-cron
-RUN chmod 0644 /etc/cron.d/humhub-cron
 
 # Load the cron file
 RUN crontab /etc/cron.d/humhub-cron
