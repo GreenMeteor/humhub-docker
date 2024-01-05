@@ -32,7 +32,7 @@ jobs:
       - name: Validate Dockerfile
         id: build
         run: |
-          docker build --platform=linux/amd64 -t humhub-test -f Dockerfile .
+          docker build --platform=linux/amd64 -t humhub-test -f /linux/Dockerfile .
           echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
 
       - name: Check Docker build status
