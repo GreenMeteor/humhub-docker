@@ -49,7 +49,7 @@ jobs:
         run: |
           brew update
           brew outdated --cask julia || true
-          brew upgrade virtualbox
+          brew outdated --cask virtualbox || true
           brew install --cask docker
 
       - name: Validate Dockerfile
