@@ -3,8 +3,12 @@ name: MacOS Dockerfile
 on:
   push:
     branches: [main]
+    paths:
+      - 'macos/Dockerfile'
   pull_request:
     branches: [main]
+    paths:
+      - 'macos/Dockerfile'
 
 jobs:
   build-macos:
