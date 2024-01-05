@@ -9,9 +9,6 @@ jobs:
     name: Build and Push - MacOS
     runs-on: macos-latest
 
-    container:
-      image: docker:20.10.8
-
     outputs:
       release_version: ${{ github.event.release.tag_name }}
 
@@ -19,8 +16,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Install Docker
+        run: |
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
+          sudo usermod -aG docker $USER
+
+      - name: Log in to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Build and push Docker image
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
           docker build -t archblood/humhub-docker:${{ github.event.release.tag_name }} -f macos/Dockerfile .
           docker push archblood/humhub-docker:${{ github.event.release.tag_name }}
