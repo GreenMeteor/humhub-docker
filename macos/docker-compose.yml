@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  humhub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      MYSQL_HOST: "mysql"
+      MYSQL_DATABASE: "humhub"
+      MYSQL_USER: "humhub"
+      MYSQL_PASSWORD: "password"
+      HUMHUB_DIRECTORY: "/var/www/html"
+      MAILER_DSN: "sendmail://default"
+      REDIS_HOST: "redis"
+    volumes:
+      - humhub_files:/var/www/html
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: "humhub"
+      MYSQL_USER: "humhub"
+      MYSQL_PASSWORD: "password"
+    volumes:
+      - humhub_db_data:/var/lib/mysql
+
+  redis:
+    image: redis
+
+volumes:
+  humhub_db_data:
+  humhub_files:
