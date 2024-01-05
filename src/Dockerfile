@@ -36,7 +36,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod 0644 /etc/cron.d/humhub-cron
 
 # Set a default USER_NAME if not provided during build
-ARG USER_NAME=YOURUSERNAME
+ARG USER_NAME=USERNAME
 
 # Set basic permissions for Windows (NTFS)
 RUN if [ "$(uname -s)" = "Windows" ]; then \
