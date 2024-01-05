@@ -35,8 +35,15 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v1
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Buildx (for Linux)
+        if: matrix.os == 'ubuntu-latest'
         uses: docker/setup-buildx-action@v1
+
+      - name: Install Docker (for macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew cask install docker
 
       - name: Validate Dockerfile
         id: build
