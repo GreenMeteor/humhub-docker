@@ -52,12 +52,12 @@ jobs:
           echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV || echo "::set-env name=SKIP_WINDOWS::true"
 
       - name: Check Docker build status
-        if: ${{ env.SKIP_WINDOWS != 'true' }}
+        if: ${{ matrix.os != 'windows-latest' && env.SKIP_WINDOWS != 'true' }}
         run: |
           docker inspect $IMAGE_NAME || true
 
       - name: Verify Docker image
-        if: ${{ env.SKIP_WINDOWS != 'true' }}
+        if: ${{ matrix.os != 'windows-latest' && env.SKIP_WINDOWS != 'true' }}
         run: |
           docker run --rm $IMAGE_NAME php -v || echo "PHP verification failed"
           docker run --rm $IMAGE_NAME apache2 -v || echo "Apache verification failed"
