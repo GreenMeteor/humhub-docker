@@ -2,9 +2,13 @@ name: Linux Dockerfile
 
 on:
   push:
-    branches: [main]
+    paths:
+      - 'linux/Dockerfile'
   pull_request:
-    branches: [main]
+    paths:
+      - 'linux/Dockerfile'
+    branches:
+      - main
 
 jobs:
   build-linux:
