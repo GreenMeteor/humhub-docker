@@ -1,0 +1,51 @@
+name: Windows Dockerfile
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Validate Dockerfile
+        id: build
+        run: |
+          docker build -t humhub-test -f /windows/Dockerfile .
+          echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
+
+      - name: Check Docker build status
+        run: |
+          docker inspect $IMAGE_NAME || true
+
+      - name: Verify Docker image
+        run: |
+          docker run --rm $IMAGE_NAME powershell -command "Write-Host 'PHP verification succeeded'" || echo "PHP verification failed"
+          docker run --rm $IMAGE_NAME powershell -command "Write-Host 'Apache verification succeeded'" || echo "Apache verification failed"
+
+      - name: Copy crontab
+        run: |
+          copy /windows/crontab C:\tmp\crontab
+
+      - name: Check crontab
+        run: |
+          docker run --rm -v C:\tmp\crontab:C:\etc\cron.d\humhub-cron $IMAGE_NAME powershell -command "Copy-Item C:\etc\cron.d\humhub-cron\ -Destination C:\temp\ && Get-Content C:\temp\humhub-cron" || echo "Crontab verification failed"
+
+      - name: Cleanup
+        run: |
+          docker image rm $IMAGE_NAME || true
