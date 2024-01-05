@@ -44,7 +44,7 @@ RUN if [ "$(uname -s)" = "Windows" ]; then \
     fi
 
 # Copy the cron file
-COPY --chown=root:root crontab /etc/cron.d/humhub-cron
+COPY --chown=root:root src/crontab /etc/cron.d/humhub-cron
 
 # Load the cron file
 RUN src/crontab /etc/cron.d/humhub-cron
