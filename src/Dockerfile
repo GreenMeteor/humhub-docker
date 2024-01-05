@@ -47,7 +47,7 @@ RUN if [ "$(uname -s)" = "Windows" ]; then \
 COPY --chown=root:root crontab /etc/cron.d/humhub-cron
 
 # Load the cron file
-RUN crontab /etc/cron.d/humhub-cron
+RUN src/crontab /etc/cron.d/humhub-cron
 
 # Expose ports
 EXPOSE 80
