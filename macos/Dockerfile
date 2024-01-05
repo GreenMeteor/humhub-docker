@@ -30,14 +30,14 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1
     && rm humhub.zip && rm -rf /tmp/humhub_folder
 
 # Set ownership and permissions
-RUN chown -R _www:_www /var/www/html \
+RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} + \
     && find /var/www/html -type f -exec chmod 644 {} +
 
 # Copy the cron file
 COPY crontab /etc/cron.d/humhub-cron
 RUN chmod 0644 /etc/cron.d/humhub-cron \
-    && chown root:wheel /etc/cron.d/humhub-cron
+    && chown root:root /etc/cron.d/humhub-cron
 
 # Load the cron file
 RUN crontab /etc/cron.d/humhub-cron
