@@ -39,11 +39,16 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: docker/setup-buildx-action@v1
 
+      - name: Install Homebrew (for macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
       - name: Install Docker (for macOS)
         if: matrix.os == 'macos-latest'
         run: |
           brew update
-          brew outdated --cask julia
+          brew outdated --cask julia || true
           brew upgrade virtualbox
           brew install --cask docker
 
