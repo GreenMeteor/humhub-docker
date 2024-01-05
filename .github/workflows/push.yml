@@ -1,4 +1,4 @@
-name: Push Image - Linux
+name: Push Image
 
 on:
   release:
@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t archblood/humhub-docker:${{ github.event.release.tag_name }} -f linux/Dockerfile .
+          docker build -t archblood/humhub-docker:${{ github.event.release.tag_name }} -f src/Dockerfile .
 
       - name: Push Docker image to Docker Hub
         run: |
