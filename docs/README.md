@@ -1,8 +1,13 @@
 # Dockerfile for HumHub Installation
 
-[![Linux Dockerfile](https://github.com/GreenMeteor/humhub-docker/actions/workflows/linux-test.yml/badge.svg?event=push)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/linux-test.yml) [![Push Image - Linux](https://github.com/GreenMeteor/humhub-docker/actions/workflows/push-linux.yml/badge.svg?event=release)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/push-linux.yml)
-
 This Dockerfile sets up a PHP 8.2.14 Apache environment and installs HumHub 1.15.2.
+
+### Dockerfiles
+| Operating Systems | Status |
+|----------|-------------|
+| Linx | [![Linux Dockerfile](https://github.com/GreenMeteor/humhub-docker/actions/workflows/linux-test.yml/badge.svg)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/linux-test.yml) |
+| MacOS | [![MacOS Dockerfile](https://github.com/GreenMeteor/humhub-docker/actions/workflows/macos-tests.yml/badge.svg)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/macos-tests.yml) |
+| Windows | [![Windows Dockerfile](https://github.com/GreenMeteor/humhub-docker/actions/workflows/windows-test.yml/badge.svg)](https://github.com/GreenMeteor/humhub-docker/actions/workflows/windows-test.yml) |
 
 ### Instructions:
 
