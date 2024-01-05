@@ -26,7 +26,7 @@ jobs:
       - name: Validate Dockerfile
         id: build
         run: |
-          docker build -t humhub-test -f /windows/Dockerfile .
+          docker build -t humhub-test -f windows/Dockerfile .
           echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV
 
       - name: Check Docker build status
