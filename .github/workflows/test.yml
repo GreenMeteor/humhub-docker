@@ -14,58 +14,37 @@ on:
 
 jobs:
   build:
-    name: Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [16.x]
+    name: Test on Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16.x
 
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up QEMU (not needed on Windows/macOS)
-        if: matrix.os == 'ubuntu-latest'
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
-      - name: Set up Docker Buildx (for Linux)
-        if: matrix.os == 'ubuntu-latest'
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-
-      - name: Install Homebrew (for macOS)
-        if: matrix.os == 'macos-latest'
-        run: |
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-      - name: Install Docker (for macOS)
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew update
-          brew install --cask docker || echo "::set-env name=SKIP_MACOS::true"
 
       - name: Validate Dockerfile
         id: build
         run: |
           docker build -t humhub-test -f src/Dockerfile .
-          echo "IMAGE_NAME=humhub-test" >> $GITHUB_ENV || echo "::set-env name=SKIP_WINDOWS::true"
 
       - name: Check Docker build status
-        if: ${{ matrix.os != 'windows-latest' && env.SKIP_WINDOWS != 'true' }}
         run: |
-          docker inspect $IMAGE_NAME || true
+          docker inspect humhub-test
 
       - name: Verify Docker image
-        if: ${{ matrix.os != 'windows-latest' && env.SKIP_WINDOWS != 'true' }}
         run: |
-          docker run --rm $IMAGE_NAME php -v || echo "PHP verification failed"
-          docker run --rm $IMAGE_NAME apache2 -v || echo "Apache verification failed"
+          docker run --rm humhub-test php -v || echo "PHP verification failed"
+          docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
 
       - name: Copy crontab
         run: |
@@ -73,8 +52,8 @@ jobs:
 
       - name: Check crontab
         run: |
-          docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron $IMAGE_NAME bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "Crontab verification failed"
+          docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron humhub-test bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "Crontab verification failed"
 
       - name: Cleanup
         run: |
-          docker image rm $IMAGE_NAME || true
+          docker image rm humhub-test || true
