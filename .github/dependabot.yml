@@ -1,23 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "docker"
-    directory: "/linux"
-    schedule:
-      interval: "weekly"
-    ignore:
-      - dependency-name: "node"
-        versions: ["10.x", "12.x"]
-
-  - package-ecosystem: "docker"
-    directory: "/macos"
-    schedule:
-      interval: "weekly"
-    ignore:
-      - dependency-name: "node"
-        versions: ["10.x", "12.x"]
-
-  - package-ecosystem: "docker"
-    directory: "/windows"
+    directory: "/src"
     schedule:
       interval: "weekly"
     ignore:
