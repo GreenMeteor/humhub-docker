@@ -32,8 +32,7 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1
 # Set ownership and permissions for Unix systems
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} + \
-    && find /var/www/html -type f -exec chmod 644 {} + \
-    && chmod 0644 /etc/cron.d/humhub-cron
+    && find /var/www/html -type f -exec chmod 644 {} +
 
 # Set a default USER_NAME if not provided during build
 ARG USER_NAME=YOURUSERNAME
@@ -46,7 +45,6 @@ RUN if [ "$(uname -s)" = "Windows" ]; then \
 
 # Copy the cron file and set permissions
 COPY --chown=root:root src/crontab /etc/cron.d/humhub-cron
-RUN chmod 0644 /etc/cron.d/humhub-cron
 
 # Expose ports
 EXPOSE 80
