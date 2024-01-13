@@ -13,7 +13,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-linux:
     name: Test on Ubuntu
     runs-on: ubuntu-latest
 
@@ -32,7 +32,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Validate Dockerfile
+      - name: Validate Dockerfile on Linux
         id: build
         run: |
           docker build -t humhub-test -f src/Dockerfile .
@@ -41,19 +41,104 @@ jobs:
         run: |
           docker inspect humhub-test
 
-      - name: Verify Docker image
+      - name: Verify Docker image on Linux
         run: |
           docker run --rm humhub-test php -v || echo "PHP verification failed"
           docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
 
-      - name: Copy crontab
+      - name: Copy crontab on Linux
         run: |
           cp src/crontab /tmp/crontab
 
-      - name: Check crontab
+      - name: Check crontab on Linux
         run: |
           docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron humhub-test bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "Crontab verification failed"
 
-      - name: Cleanup
+      - name: Cleanup on Linux
+        run: |
+          docker image rm humhub-test || true
+
+  build-windows:
+    name: Test on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Validate Dockerfile on Windows
+        id: build
+        run: |
+          docker build -t humhub-test -f src/Dockerfile .
+
+      - name: Check Docker build status on Windows
+        run: |
+          docker inspect humhub-test
+
+      - name: Verify Docker image on Windows
+        run: |
+          docker run --rm humhub-test php -v || echo "PHP verification failed"
+          docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
+
+      - name: Copy crontab on Windows
+        run: |
+          cp src/crontab /tmp/crontab
+
+      - name: Check crontab on Windows
+        run: |
+          docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron humhub-test bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "Crontab verification failed"
+
+      - name: Cleanup on Windows
+        run: |
+          docker image rm humhub-test || true
+
+  build-macos:
+    name: Test on MacOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Validate Dockerfile on MacOS
+        id: build
+        run: |
+          docker build -t humhub-test -f src/Dockerfile .
+
+      - name: Check Docker build status on MacOS
+        run: |
+          docker inspect humhub-test
+
+      - name: Verify Docker image on MacOS
+        run: |
+          docker run --rm humhub-test php -v || echo "PHP verification failed"
+          docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
+
+      - name: Copy crontab on MacOS
+        run: |
+          cp src/crontab /tmp/crontab
+
+      - name: Check crontab on MacOS
+        run: |
+          docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron humhub-test bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "Crontab verification failed"
+
+      - name: Cleanup on MacOS
         run: |
           docker image rm humhub-test || true
