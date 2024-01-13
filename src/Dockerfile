@@ -35,7 +35,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type f -exec chmod 644 {} +
 
 # Set a default USER_NAME if not provided during build
-ARG USER_NAME=USERNAME
+ARG USER_NAME=YOURUSERNAME
 
 # Set basic permissions for Windows (NTFS)
 RUN if [ "$(uname -s)" = "Windows" ]; then \
