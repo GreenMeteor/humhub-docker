@@ -3,8 +3,8 @@ version: '3.8'
 services:
   humhub:
     build:
-      context: ./src
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/Dockerfile
     ports:
       - "8080:80"
     environment:
@@ -32,4 +32,6 @@ services:
 
 volumes:
   humhub_db_data:
+    driver: local
   humhub_files:
+    driver: local
