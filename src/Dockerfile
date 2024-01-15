@@ -41,7 +41,7 @@ ARG USER_NAME=USERNAME
 USER www-data
 
 # Set basic permissions for Windows (NTFS)
-RUN if [ "$OSTYPE" = "msys" -o "$OSTYPE" = "win32" ]; then \
+RUN if [ "$(uname -s)" = "WindowsNT" ]; then \
         echo "Setting permissions for Windows (NTFS)"; \
         icacls "C:\Users\${USER_NAME}\humhub-docker" /t /grant 'IIS AppPool\DefaultAppPool:(OI)(CI)R'; \
     fi
