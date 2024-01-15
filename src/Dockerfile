@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libldap2-dev \
     libpq-dev \
     cron \
+    libonig-dev \
+    && pecl install apcu \
+    && docker-php-ext-enable apcu \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql \
     && a2enmod rewrite \
