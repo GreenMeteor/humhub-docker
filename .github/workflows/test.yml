@@ -14,13 +14,8 @@ on:
 
 jobs:
   build:
-    name: Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        continue-on-failure: [true, true, true]
+    name: Test on Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check Docker daemon
@@ -35,7 +30,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up QEMU (Linux only)
-        if: matrix.os == 'ubuntu-latest'
         uses: docker/setup-qemu-action@v1
         with:
           image: tonistiigi/binfmt:latest
