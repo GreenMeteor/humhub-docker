@@ -42,3 +42,4 @@ Build the Docker image using the provided Dockerfile:
 
 ```bash
 docker build -t humhub-docker .
+```
