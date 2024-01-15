@@ -37,14 +37,17 @@ RUN chown -R www-data:www-data /var/www/html \
 # Set a default USER_NAME if not provided during build
 ARG USER_NAME=USERNAME
 
+# Switch to the www-data user
+USER www-data
+
 # Set basic permissions for Windows (NTFS)
-RUN if [ "$(uname -s)" = "Windows" ]; then \
+RUN if [ "$OSTYPE" = "msys" -o "$OSTYPE" = "win32" ]; then \
         echo "Setting permissions for Windows (NTFS)"; \
         icacls "C:\Users\${USER_NAME}\humhub-docker" /t /grant 'IIS AppPool\DefaultAppPool:(OI)(CI)R'; \
     fi
 
 # Copy the cron file and set permissions
-COPY --chown=root:root src/crontab /etc/cron.d/humhub-cron
+COPY --chown=www-data:www-data src/crontab /etc/cron.d/humhub-cron
 
 # Expose ports
 EXPOSE 80
