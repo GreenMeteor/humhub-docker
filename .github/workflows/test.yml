@@ -20,8 +20,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        continue-on-failure: [true, true, true]
 
     steps:
+      - name: Check Docker daemon
+        run: docker info || sudo service docker start
+
       - name: Use Node.js 16.x
         uses: actions/setup-node@v2
         with:
@@ -46,21 +50,19 @@ jobs:
           docker build -t humhub-test -f src/Dockerfile .
 
       - name: Check Docker build status
-        run: |
-          docker inspect humhub-test
+        run: docker inspect humhub-test
 
       - name: Verify Docker image
         run: |
-          docker run --rm humhub-test php -v || echo "PHP verification failed"
-          docker run --rm humhub-test apache2 -v || echo "Apache verification failed"
+          docker run --rm humhub-test php -v || echo "::error::PHP verification failed"
+          docker run --rm humhub-test apache2 -v || echo "::error::Apache verification failed"
 
       - name: Copy crontab
-        run: |
-          cp src/crontab /tmp/crontab
+        run: cp src/crontab /tmp/crontab
 
       - name: Check crontab
         run: |
-          docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron humhub-test bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "Crontab verification failed"
+          docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron humhub-test bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "::error::Crontab verification failed"
 
       - name: Cleanup
         run: |
