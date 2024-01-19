@@ -14,6 +14,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libldap2-dev \
     libpq-dev \
     cron \
+    libonig-dev \
+    && pecl install apcu \
+    && docker-php-ext-enable apcu \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql \
     && a2enmod rewrite \
@@ -37,14 +40,17 @@ RUN chown -R www-data:www-data /var/www/html \
 # Set a default USER_NAME if not provided during build
 ARG USER_NAME=USERNAME
 
+# Switch to the www-data user
+USER www-data
+
 # Set basic permissions for Windows (NTFS)
-RUN if [ "$(uname -s)" = "Windows" ]; then \
+RUN if [ "$(uname -s)" = "WindowsNT" ]; then \
         echo "Setting permissions for Windows (NTFS)"; \
         icacls "C:\Users\${USER_NAME}\humhub-docker" /t /grant 'IIS AppPool\DefaultAppPool:(OI)(CI)R'; \
     fi
 
 # Copy the cron file and set permissions
-COPY --chown=root:root src/crontab /etc/cron.d/humhub-cron
+COPY --chown=www-data:www-data src/crontab /etc/cron.d/humhub-cron
 
 # Expose ports
 EXPOSE 80
