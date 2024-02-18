@@ -1,6 +1,6 @@
 # Dockerfile for HumHub Installation
 
-This Dockerfile sets up a PHP 8.2.14 Apache environment and installs HumHub 1.15.2.
+This Dockerfile sets up a PHP 8.2.15 Apache environment and installs HumHub 1.15.3.
 
 ### Dockerfiles
 | Operating Systems | Status |
@@ -21,7 +21,7 @@ This Dockerfile sets up a PHP 8.2.14 Apache environment and installs HumHub 1.15
    - Creates the directory structure: `/var/www/html` for HumHub installation.
 
 4. **HumHub Installation**:
-   - Downloads HumHub version 1.15.2 using `curl`.
+   - Downloads HumHub version 1.15.3 using `curl`.
    - Unzips the downloaded file to `/tmp/humhub_folder`.
    - Copies HumHub contents to `/var/www/html`.
    - Adjusts ownership and permissions for `/var/www/html`.
