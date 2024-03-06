@@ -1,6 +1,6 @@
 # Dockerfile for HumHub Installation
 
-This Dockerfile sets up a PHP 8.2.15 Apache environment and installs HumHub 1.15.3.
+This Dockerfile sets up a PHP 8.3.3 Apache environment and installs HumHub 1.15.3.
 
 ### Dockerfiles
 | Operating Systems | Status |
@@ -11,7 +11,7 @@ This Dockerfile sets up a PHP 8.2.15 Apache environment and installs HumHub 1.15
 
 ### Instructions:
 
-1. **Base Image**: Uses `php:8.2.15-apache` as the base image.
+1. **Base Image**: Uses `php:8.3.3-apache` as the base image.
 
 2. **Dependencies Installation**:
    - Installs necessary packages via `apt-get`.
