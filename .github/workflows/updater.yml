@@ -15,6 +15,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set permissions for version.txt
+        run: chmod 644 version.txt
+
+      - name: Set permissions for Dockerfile
+        run: chmod 644 ./src/Dockerfile
+
       - name: Get latest version from version.txt
         run: |
           latest_version=$(cat version.txt)
