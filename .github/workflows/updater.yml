@@ -1,0 +1,39 @@
+name: Update Dockerfile with HumHub version
+
+on:
+  workflow_run:
+    workflows: ["Check for HumHub Updates"]
+    types:
+      - completed
+
+jobs:
+  update-dockerfile:
+    name: Update Dockerfile
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.update_available == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get latest version from version.txt
+        run: latest_version=$(cat version.txt)
+
+      - name: Update Dockerfile
+        run: |
+          new_url="https://download.humhub.com/downloads/install/humhub-$latest_version.zip"
+          sed -i "s|https://download.humhub.com/downloads/install/humhub-[0-9]+\.[0-9]+\.[0-9]+.zip|$new_url|" src/Dockerfile
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add src/Dockerfile
+          git commit -m "Update HumHub version to $latest_version"
+      
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update HumHub version to $latest_version"
+          title: "Update HumHub to version $latest_version"
+          body: "This PR updates the HumHub version in the Dockerfile to $latest_version."
