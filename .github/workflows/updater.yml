@@ -17,19 +17,19 @@ jobs:
 
       - name: Get latest version from version.txt
         run: |
-          latest_version=$(cat version.txt)
+          latest_version=$(cat ./src/version.txt)
           echo "Latest version: $latest_version"
 
       - name: Update Dockerfile
         run: |
           new_url="https://download.humhub.com/downloads/install/humhub-$latest_version.zip"
-          sed -i "s|https://download.humhub.com/downloads/install/humhub-[0-9]\+\.[0-9]\+\.[0-9]\+.zip|$new_url|" src/Dockerfile
+          sed -i "s|https://download.humhub.com/downloads/install/humhub-[0-9]\+\.[0-9]\+\.[0-9]\+.zip|$new_url|" ./src/Dockerfile
 
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add src/Dockerfile
+          git add ./src/Dockerfile
           git commit -m "Update HumHub version to $latest_version"
       
       - name: Create Pull Request
