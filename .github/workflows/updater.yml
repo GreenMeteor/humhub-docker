@@ -15,21 +15,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set permissions for version.txt
-        run: chmod 644 version.txt
-
-      - name: Set permissions for Dockerfile
-        run: chmod 644 ./src/Dockerfile
+      - name: Set permissions for version.txt and Dockerfile
+        run: |
+          chmod 644 ./src/version.txt
+          chmod 644 ./src/Dockerfile
 
       - name: Get latest version from version.txt
+        id: get_version
         run: |
-          latest_version=$(cat version.txt)
-          echo "Latest version: $latest_version"
+          echo "Reading version.txt..."
+          latest_version=$(cat ./src/version.txt)
+          echo "::set-output name=version::$latest_version"
 
       - name: Update Dockerfile
         run: |
           current_url=$(grep -oP '(?<=https://download.humhub.com/downloads/install/humhub-)[0-9]+\.[0-9]+\.[0-9]+\.zip' ./src/Dockerfile)
-          new_url="https://download.humhub.com/downloads/install/humhub-$latest_version.zip"
+          new_url="https://download.humhub.com/downloads/install/humhub-${{ steps.get_version.outputs.version }}.zip"
           sed -i "s|$current_url|$new_url|" ./src/Dockerfile
 
       - name: Commit changes
@@ -37,7 +38,7 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add ./src/Dockerfile
-          git commit -m "Update HumHub version to $latest_version"
+          git commit -m "Update HumHub version to ${{ steps.get_version.outputs.version }}"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -48,6 +49,6 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Update HumHub version to $latest_version"
-          title: "Update HumHub to version $latest_version"
-          body: "This PR updates the HumHub version in the Dockerfile to $latest_version."
+          commit-message: "Update HumHub version to ${{ steps.get_version.outputs.version }}"
+          title: "Update HumHub to version ${{ steps.get_version.outputs.version }}"
+          body: "This PR updates the HumHub version in the Dockerfile to ${{ steps.get_version.outputs.version }}."
