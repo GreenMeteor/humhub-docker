@@ -28,8 +28,9 @@ jobs:
 
       - name: Update Dockerfile
         run: |
+          current_url=$(grep -oP '(?<=https://download.humhub.com/downloads/install/humhub-)[0-9]+\.[0-9]+\.[0-9]+\.zip' ./src/Dockerfile)
           new_url="https://download.humhub.com/downloads/install/humhub-$latest_version.zip"
-          sed -i "s|https://download.humhub.com/downloads/install/humhub-[0-9]\+\.[0-9]\+\.[0-9]\+.zip|$new_url|" ./src/Dockerfile
+          sed -i "s|$current_url|$new_url|" ./src/Dockerfile
 
       - name: Commit changes
         run: |
