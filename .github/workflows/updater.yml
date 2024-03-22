@@ -17,7 +17,7 @@ jobs:
 
       - name: Get latest version from version.txt
         run: |
-          latest_version=$(cat ./src/version.txt)
+          latest_version=$(cat version.txt)
           echo "Latest version: $latest_version"
 
       - name: Update Dockerfile
