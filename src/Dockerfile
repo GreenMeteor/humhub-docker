@@ -1,5 +1,5 @@
 # Set default PHP version
-FROM php:8.3.4-apache
+FROM php:8.3.6-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -27,7 +27,7 @@ RUN mkdir -p /var/www/html
 
 # Download and install HumHub
 WORKDIR /tmp
-RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1.15.3.zip \
+RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1.16.0.zip \
     && unzip humhub.zip -d /tmp/humhub_folder \
     && cp -R /tmp/humhub_folder/. /var/www/html \
     && rm humhub.zip && rm -rf /tmp/humhub_folder

@@ -5,15 +5,17 @@
 #### HumHub Versions
 | Versions | Supported |
 | ------- | ------------------ |
-| 1.15.x   | :white_check_mark: |
-| 1.14.x   | :x: |
+| 1.16.0   | ✅ |
+| 1.15.x   | ❌ |
+| Older   | ❌ |
 
 #### PHP Versions
-| HumHub Versions | Supported |
+| Versions | Supported |
 | ------- | ------------------ |
-| 8.2.x   | :white_check_mark: |
-| 8.1.x   | :x: |
-| 8.0.x   | :x: |
+| 8.3.x   | ✅ |
+| 8.2.x   | ❌ |
+| 8.1.x   | ❌ |
+| 8.0.x   | ❌ |
 
 ### Reporting a Vulnerability
 If there are any vulnerabilities please report them to security@greenmeteor.net
