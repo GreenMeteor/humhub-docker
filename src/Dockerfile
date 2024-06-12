@@ -1,5 +1,5 @@
 # Set default PHP version
-FROM php:8.3.7-apache
+FROM php:8.3.8-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
