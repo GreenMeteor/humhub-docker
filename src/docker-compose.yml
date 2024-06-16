@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: src/Dockerfile
     environment:
-      MYSQL_HOST: "mysql"
+      MYSQL_HOST: "mysql_humhub"
       MYSQL_DATABASE: "humhub"
       MYSQL_USER: "humhub"
       MYSQL_PASSWORD: "password"
@@ -17,16 +17,14 @@ services:
     networks:
       - humhub_network
 
-  mysql:
-    image: mysql:5.7
+  mysql_humhub:
+    image: mariadb:latest
     environment:
       MYSQL_DATABASE: "humhub"
       MYSQL_USER: "humhub"
       MYSQL_PASSWORD: "password"
     volumes:
       - humhub_db_data:/var/lib/mysql
-    networks:
-      - humhub_network
 
   nginx:
     image: nginx:latest
@@ -47,14 +45,14 @@ services:
       - /var/www/certbot:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done'"
 
-volumes:
-  humhub_db_data:
-    driver: local
-  humhub_files:
-    driver: local
-  nginx_cert:
-    driver: local
-
 networks:
   humhub_network:
     driver: bridge
+
+volumes:
+  humhub_files:
+    driver: local
+  humhub_db_data:
+    driver: local
+  nginx_cert:
+    driver: local
