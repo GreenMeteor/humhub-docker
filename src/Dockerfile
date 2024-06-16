@@ -1,5 +1,5 @@
 # Use a multi-stage build to reduce final image size
-FROM php:8.3.7-apache AS builder
+FROM php:8.3.8-apache AS builder
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
