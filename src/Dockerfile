@@ -42,6 +42,12 @@ FROM runtime-deps
 # Copy HumHub from the builder stage
 COPY --from=builder /tmp/humhub_folder/. /var/www/html
 
+# Copy custom Apache configuration
+COPY src/apache2.conf /etc/apache2/sites-available/custom-servername.conf
+
+# Enable the custom configuration (assuming it's a virtual host config)
+RUN a2ensite custom-servername
+
 # Set ownership and permissions
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} + \
