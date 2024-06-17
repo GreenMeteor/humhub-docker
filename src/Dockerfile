@@ -1,7 +1,7 @@
-# Use a multi-stage build to reduce final image size
+# Stage 1: Builder
 FROM php:8.3.8-apache AS builder
 
-# Install system dependencies
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libicu-dev \
     libldap2-dev \
     libpq-dev \
-    cron \
     libonig-dev \
     && pecl install apcu \
     && docker-php-ext-enable apcu \
@@ -24,20 +23,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Download and install HumHub
 WORKDIR /tmp
-RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-1.15.6.zip \
+ARG HUMHUB_VERSION=1.15.6
+RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-${HUMHUB_VERSION}.zip \
     && unzip humhub.zip -d /tmp/humhub_folder \
     && rm humhub.zip
 
-# Final stage: copy built application
-FROM php:8.3.7-apache
+# Stage 2: Runtime Dependencies
+FROM php:8.3.8-apache AS runtime-deps
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cron \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Stage 3: Final
+FROM runtime-deps
+
 # Copy HumHub from the builder stage
 COPY --from=builder /tmp/humhub_folder/. /var/www/html
+
+# Copy custom Apache configuration
+COPY src/apache2.conf /etc/apache2/sites-available/custom-servername.conf
+
+# Enable the custom configuration (assuming it's a virtual host config)
+RUN a2ensite custom-servername
 
 # Set ownership and permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -53,6 +62,10 @@ EXPOSE 80
 
 # Define the working directory
 WORKDIR /var/www/html
+
+# Healthcheck to monitor the status of the container
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl --fail http://localhost || exit 1
 
 # Start Apache service and cron in the foreground
 CMD ["sh", "-c", "service cron start && apache2-foreground"]

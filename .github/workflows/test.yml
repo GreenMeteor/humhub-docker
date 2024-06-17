@@ -51,13 +51,17 @@ jobs:
           docker run --rm humhub-test php -v || echo "::error::PHP verification failed"
           docker run --rm humhub-test apache2 -v || echo "::error::Apache verification failed"
 
-      - name: Copy crontab
-        run: cp src/crontab /tmp/crontab
+      - name: Start container and check cron status
+        run: docker run --rm -d --name humhub-container humhub-test
+        
+      - name: Check cron service status
+        run: docker exec humhub-container service cron status || echo "::error::Cron service verification failed"
 
-      - name: Check crontab
-        run: |
-          docker run --rm -v /tmp/crontab:/etc/cron.d/humhub-cron humhub-test bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "::error::Crontab verification failed"
+      - name: Copy crontab
+        run: docker cp src/crontab humhub-container:/etc/cron.d/humhub-cron
+
+      - name: Verify crontab
+        run: docker exec humhub-container bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "::error::Crontab verification failed"
 
       - name: Cleanup
-        run: |
-          docker image rm humhub-test || true
+        run: docker stop humhub-container || true && docker rm humhub-container || true
