@@ -68,4 +68,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl --fail http://localhost || exit 1
 
 # Start Apache service and cron in the foreground
-CMD ["sh", "-c", "cron && apache2-foreground"]
+CMD ["sh", "-c", "service cron start && apache2-foreground"]
