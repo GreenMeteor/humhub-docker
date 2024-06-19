@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libexif-dev \
     libzip-dev \
     zlib1g-dev \
     libicu-dev \
