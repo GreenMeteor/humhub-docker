@@ -13,7 +13,7 @@ env:
   REGISTRY: docker.io
   # Image repository, without hostname and tag
   IMAGE_NAME: ${{ github.repository }}
-  SHA: ${{ github.event.pull_request.head.sha || github.event.after }}
+  SHA: ${{ github.sha }}
 
 jobs:
   build:
