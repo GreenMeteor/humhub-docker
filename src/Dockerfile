@@ -41,6 +41,11 @@ RUN apt-get update && \
 # Stage 3: Final
 FROM runtime-deps
 
+# Metadata for provenance
+LABEL org.opencontainers.image.source="https://github.com/GreenMeteor/humhub-docker"
+LABEL org.opencontainers.image.revision="$GIT_COMMIT"
+LABEL org.opencontainers.image.base.name="php:8.3.8-apache"
+
 # Copy HumHub from the builder stage
 COPY --from=builder /tmp/humhub_folder/. /var/www/html
 
@@ -48,14 +53,16 @@ COPY --from=builder /tmp/humhub_folder/. /var/www/html
 COPY src/apache2.conf /etc/apache2/sites-available/custom-servername.conf
 
 # Enable the custom configuration (assuming it's a virtual host config)
-RUN a2ensite custom-servername && \
-    chown -R www-data:www-data /var/www/html && \
+RUN a2ensite custom-servername
+
+# Set ownership and permissions
+RUN chown -R www-data:www-data /var/www/html && \
     find /var/www/html -type d -exec chmod 755 {} + && \
-    find /var/www/html -type f -exec chmod 644 {} + && \
-    chmod 0644 /etc/cron.d/humhub-cron
+    find /var/www/html -type f -exec chmod 644 {} +
 
 # Copy the cron file and set permissions
 COPY --chown=www-data:www-data src/crontab /etc/cron.d/humhub-cron
+RUN chmod 0644 /etc/cron.d/humhub-cron
 
 # Expose ports
 EXPOSE 80
