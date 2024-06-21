@@ -12,7 +12,7 @@ env:
   # Hostname of your registry
   REGISTRY: docker.io
   # Image repository, without hostname and tag
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: archblood/humhub-docker
   SHA: ${{ github.sha }}
 
 jobs:
