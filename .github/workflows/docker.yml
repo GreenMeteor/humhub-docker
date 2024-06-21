@@ -46,8 +46,8 @@ jobs:
             org.opencontainers.image.source=${{ github.repositoryUrl }}
             org.opencontainers.image.revision=${{ env.SHA }}
           tags: |
-            type=edge,branch=${{ github.ref_name }}
-            type=sha,prefix=,suffix=,format=short
+            type=ref,event=branch,pattern=main,edge=true
+            type=ref,event=branch,pattern=.*,edge=false
 
       # Build and push Docker image with Buildx
       # (don't push on PR, load instead)
