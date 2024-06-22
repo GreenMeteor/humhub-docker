@@ -39,12 +39,15 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Stage 3: Final
-FROM runtime-deps
+FROM runtime-deps AS final
 
 # Metadata for provenance
 LABEL org.opencontainers.image.source="https://github.com/GreenMeteor/humhub-docker"
 LABEL org.opencontainers.image.revision="$GIT_COMMIT"
 LABEL org.opencontainers.image.base.name="php:8.3.8-apache"
+
+# Create a non-root user
+RUN groupadd -r humhub && useradd -r -g humhub humhub
 
 # Copy HumHub from the builder stage
 COPY --from=builder /tmp/humhub_folder/. /var/www/html
@@ -56,12 +59,12 @@ COPY src/apache2.conf /etc/apache2/sites-available/custom-servername.conf
 RUN a2ensite custom-servername
 
 # Set ownership and permissions
-RUN chown -R www-data:www-data /var/www/html && \
+RUN chown -R humhub:humhub /var/www/html && \
     find /var/www/html -type d -exec chmod 755 {} + && \
     find /var/www/html -type f -exec chmod 644 {} +
 
 # Copy the cron file and set permissions
-COPY --chown=www-data:www-data src/crontab /etc/cron.d/humhub-cron
+COPY --chown=humhub:humhub src/crontab /etc/cron.d/humhub-cron
 RUN chmod 0644 /etc/cron.d/humhub-cron
 
 # Expose ports
@@ -74,5 +77,6 @@ WORKDIR /var/www/html
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl --fail http://localhost || exit 1
 
-# Start Apache service and cron in the foreground
+# Start Apache service and cron in the foreground as non-root user
+USER humhub
 CMD ["sh", "-c", "service cron start && apache2-foreground"]
