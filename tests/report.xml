@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <coverage>
   <!-- Dockerfile coverage -->
-  <file path="src/Dockerfile">
+  <file path="../src/Dockerfile">
     <lines>
       <!-- Stage 1: Builder -->
       <line number="1" hits="1" branch="false" condition-coverage="0%">FROM php:8.3.8-apache AS builder</line>
@@ -116,7 +116,7 @@
   </file>
 
   <!-- docker-compose.yml coverage -->
-  <file path="docker-compose.yml">
+  <file path="../src/docker-compose.yml">
     <lines>
       <!-- Version and services -->
       <line number="1" hits="1" branch="false" condition-coverage="0%">version: '3.8'</line>
