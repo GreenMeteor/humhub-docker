@@ -21,6 +21,7 @@ RUN apt-get update && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql && \
     a2enmod rewrite && \
+    a2enmod deflate && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download and install HumHub
@@ -52,11 +53,12 @@ RUN groupadd -r humhub && useradd -r -g humhub humhub
 # Copy HumHub from the builder stage
 COPY --from=builder /tmp/humhub_folder/. /var/www/html
 
-# Copy custom Apache configuration
-COPY src/apache2.conf /etc/apache2/sites-available/custom-servername.conf
+# Copy custom Apache configuration files
+COPY src/apache2.conf /etc/apache2/apache2.conf
+COPY src/humhub.conf /etc/apache2/sites-available/humhub.conf
 
-# Enable the custom configuration (assuming it's a virtual host config)
-RUN a2ensite custom-servername
+# Enable the custom configuration
+RUN a2ensite humhub
 
 # Set ownership and permissions
 RUN chown -R humhub:humhub /var/www/html && \
@@ -69,6 +71,7 @@ RUN chmod 0644 /etc/cron.d/humhub-cron
 
 # Expose ports
 EXPOSE 80
+EXPOSE 443
 
 # Define the working directory
 WORKDIR /var/www/html
