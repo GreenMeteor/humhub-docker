@@ -11,7 +11,7 @@
 # For more information on Codacy Analysis CLI in general, see
 # https://github.com/codacy/codacy-coverage-reporter-action.
 
-name: Codacy Security Scan
+name: Codacy
 
 on:
   push:
@@ -36,29 +36,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Codacy Analysis CLI for Dockerfile
+      - name: Run Codacy Analysis for Dockerfile
+        run: |
+          # Replace with actual commands to analyze Dockerfile and generate SARIF
+          codacy-analysis-cli analyze --file src/Dockerfile --format sarif --output results_dockerfile.sarif
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+
+      - name: Run Codacy Analysis for docker-compose.yml
+        run: |
+          # Replace with actual commands to analyze docker-compose.yml and generate SARIF
+          codacy-analysis-cli analyze --file src/docker-compose.yml --format sarif --output results_docker-compose.sarif
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+
+  upload-sarif:
+    runs-on: ubuntu-latest
+    needs: codacy-security-scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Upload Dockerfile SARIF results to GitHub
         uses: codacy/codacy-analysis-cli-action@d840f886c4bd4edc059706d09c6a1586111c540b
         with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          verbose: true
-          files: src/Dockerfile
-          output: results_dockerfile.sarif
-          format: sarif
-          gh-code-scanning-compat: true
-          max-allowed-issues: 2147483647
+          sarif_file: results_dockerfile.sarif
 
-      - name: Run Codacy Analysis CLI for docker-compose.yml
-        uses: codacy/codacy-analysis-cli-action@d840f886c4bd4edc059706d09c6a1586111c540b
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          verbose: true
-          files: src/docker-compose.yml
-          output: results_docker-compose.sarif
-          format: sarif
-          gh-code-scanning-compat: true
-          max-allowed-issues: 2147483647
-
-      - name: Upload SARIF results to GitHub Advanced Security
+      - name: Upload docker-compose SARIF results to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: results_dockerfile.sarif, results_docker-compose.sarif
+          sarif_file: results_docker-compose.sarif
