@@ -36,20 +36,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Hadolint
-        run: |
-          wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.7.0/hadolint-Linux-x86_64
-          chmod +x /bin/hadolint
-
-      - name: Run Hadolint for Dockerfile
-        working-directory: src
-        run: |
-          hadolint Dockerfile -f json > ../results_dockerfile.sarif
-
-      - name: Convert Hadolint JSON to SARIF
-        run: |
-          npm install -g hadolint2sarif
-          hadolint2sarif -i ../results_dockerfile.json -o ../results_dockerfile.sarif
+      - name: Run Hadolint action for Dockerfile
+        uses: hadolint/hadolint-action@v3
+        with:
+          file: src/Dockerfile
+        id: hadolint
+      - name: Save Hadolint results
+        run: echo '${{ steps.hadolint.outputs.sarif }}' > results_dockerfile.sarif
 
       - name: Install docker-compose-linter
         run: |
@@ -63,7 +56,13 @@ jobs:
       - name: Convert docker-compose JSON to SARIF
         run: |
           npm install -g json2sarif
-          json2sarif -i ../results_docker-compose.json -o ../results_docker-compose.sarif
+          json2sarif -i results_docker-compose.json -o results_docker-compose.sarif
+
+      - name: Upload coverage report to Codacy
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report --project-token ${{ secrets.CODACY_PROJECT_TOKEN }} -r tests/coverage/report.xml --partial
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
   upload-sarif:
     name: Upload SARIF results
