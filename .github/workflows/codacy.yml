@@ -36,14 +36,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'latest'
-
-      - name: Install codacy-analysis-cli
+      - name: Download and install codacy-analysis-cli
         run: |
-          npm install -g codacy-analysis-cli
+          mkdir -p $HOME/bin
+          curl -sSL https://github.com/codacy/codacy-analysis-cli/releases/latest/download/codacy-analysis-cli-$(uname -s)-$(uname -m) -o $HOME/bin/codacy-analysis-cli
+          chmod +x $HOME/bin/codacy-analysis-cli
+          export PATH=$HOME/bin:$PATH
 
       - name: Run Codacy Analysis for Dockerfile
         run: |
