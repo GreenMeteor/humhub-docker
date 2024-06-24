@@ -45,24 +45,27 @@ jobs:
       - name: Check Docker build status
         run: docker inspect humhub-test
 
-      - name: Verify Docker image
+      - name: Start container
+        id: start-container
+        run: docker run -d --name humhub-container humhub-test
+
+      - name: Wait for container to start
+        run: sleep 10  # Adjust sleep time as needed based on container startup time
+
+      - name: Verify Docker image and Check cron service status
         run: |
           docker run --rm humhub-test php -v || echo "::error::PHP verification failed"
           docker run --rm humhub-test apache2 -v || echo "::error::Apache verification failed"
-
-      - name: Start container and check cron status
-        run: |
-          docker run -d --name humhub-container humhub-test
-          sleep 5  # Wait for container to start up
-
-      - name: Check cron service status
-        run: docker exec humhub-container service cron status || echo "::error::Cron service verification failed"
+          docker exec humhub-container service cron status || (docker logs humhub-container && echo "::error::Cron service verification failed")
 
       - name: Copy crontab
         run: docker cp src/crontab humhub-container:/etc/cron.d/humhub-cron
 
       - name: Verify crontab
         run: docker exec humhub-container bash -c 'chmod 0644 /etc/cron.d/humhub-cron && cat /etc/cron.d/humhub-cron' || echo "::error::Crontab verification failed"
+
+      - name: Run cron jobs
+        run: docker exec humhub-container cron -f &
 
       - name: Cleanup
         run: |
