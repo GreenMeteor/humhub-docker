@@ -36,21 +36,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install codacy-analysis-cli from GitHub
+      - name: Install codacy-analysis-cli
         run: |
           sudo apt-get install make
           curl -L https://github.com/codacy/codacy-analysis-cli/archive/master.tar.gz | tar xvz
           cd codacy-analysis-cli-*
           sudo make install
 
+      - name: Set Docker host
+        run: echo "export DOCKER_HOST=tcp://0.0.0.0:2375" >> $HOME/.bashrc && source $HOME/.bashrc
+
       - name: Analyze Dockerfile with codacy-analysis-cli
         run: |
           codacy-analysis-cli analyze --tool dockerfile --format sarif --output results_dockerfile.sarif src/Dockerfile
-
-      # Example: Run Codacy Analysis CLI for general code analysis (replace with your actual commands)
-      - name: Run Codacy Analysis for codebase
-        run: |
-          codacy-analysis-cli analyze --tool <tool> --format sarif --output results_codebase.sarif <path_to_code>
 
   upload-sarif:
     name: Upload SARIF results
