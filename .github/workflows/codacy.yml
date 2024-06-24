@@ -44,7 +44,7 @@ jobs:
       - name: Run Hadolint action for Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: src/Dockerfile
+          dockerfile: ../src/Dockerfile
           format: sarif
         id: hadolint
       - name: Save Hadolint results
@@ -55,7 +55,7 @@ jobs:
           pip install docker-compose-validator
 
       - name: Run docker-compose-validator
-        working-directory: src
+        working-directory: ../src
         run: |
           docker-compose-validator docker-compose.yml > ../results_docker-compose.json
 
