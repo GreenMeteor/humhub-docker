@@ -47,6 +47,7 @@ jobs:
           dockerfile: ../src/Dockerfile
           format: sarif
         id: hadolint
+
       - name: Save Hadolint results
         run: echo '${{ steps.hadolint.outputs.sarif }}' > results_dockerfile.sarif
 
@@ -62,13 +63,7 @@ jobs:
       - name: Convert docker-compose JSON to SARIF
         run: |
           npm install -g json2sarif
-          json2sarif -i results_docker-compose.json -o results_docker-compose.sarif
-
-      - name: Upload coverage report to Codacy
-        run: |
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report --project-token ${{ secrets.CODACY_PROJECT_TOKEN }} -r tests/coverage/report.xml --partial
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          json2sarif -i ../results_docker-compose.json -o results_docker-compose.sarif
 
   upload-sarif:
     name: Upload SARIF results
