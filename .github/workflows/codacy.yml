@@ -36,22 +36,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install codacy-analysis-cli from GitHub
+        run: |
+          curl -L https://github.com/codacy/codacy-analysis-cli/archive/master.tar.gz | tar xvz
+          cd codacy-analysis-cli-* && sudo make install
+
       - name: Run Hadolint action for Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          file: src/Dockerfile
+          dockerfile: src/Dockerfile
+          format: sarif
         id: hadolint
       - name: Save Hadolint results
         run: echo '${{ steps.hadolint.outputs.sarif }}' > results_dockerfile.sarif
 
-      - name: Install docker-compose-linter
+      - name: Install docker-compose-validator
         run: |
-          pip install docker-compose-linter
+          pip install docker-compose-validator
 
-      - name: Run docker-compose-linter
+      - name: Run docker-compose-validator
         working-directory: src
         run: |
-          docker-compose-linter -f docker-compose.yml > ../results_docker-compose.json
+          docker-compose-validator docker-compose.yml > ../results_docker-compose.json
 
       - name: Convert docker-compose JSON to SARIF
         run: |
