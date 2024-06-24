@@ -36,15 +36,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create coverage directory
+      - name: Install Codacy Analysis CLI
+        run: |
+          sudo apt-get update && sudo apt-get install -y make
+          curl -L https://github.com/codacy/codacy-analysis-cli/releases/download/3.0.0/codacy-analysis-cli-3.0.0-linux-x86_64.tar.gz | tar xvz
+          sudo mv codacy-analysis-cli-3.0.0/bin/codacy-analysis-cli /usr/local/bin/
+          codacy-analysis-cli --version  # Verify installation
+
+      - name: Create coverage directory (ensure it exists)
         run: mkdir -p ${{ github.workspace }}/tests/coverage
 
-      - name: Analyze Dockerfile with codacy-analysis-cli
+      - name: Run tests and generate coverage reports
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace codacy/codacy-analysis-cli:stable analyze --directory /workspace/src --format sarif --output /workspace/tests/coverage/results_dockerfile.sarif
 
-      - name: List files in coverage directory
-        run: ls -al ${{ github.workspace }}/tests/coverage
+      - name: Upload coverage reports to Codacy
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: |
+          codacy-coverage-reporter report -l <format> -r ${{ github.workspace }}/tests/coverage/results_dockerfile.sarif
 
   upload-sarif:
     name: Upload SARIF results
@@ -57,9 +67,13 @@ jobs:
       - name: Create coverage directory (ensure it exists)
         run: mkdir -p ${{ github.workspace }}/tests/coverage
 
-      # List files in coverage directory (debugging step)
-      - name: List files in coverage directory
+      - name: List files in coverage directory (debugging step)
         run: ls -al ${{ github.workspace }}/tests/coverage
+
+      - name: Wait for SARIF file to be created
+        run: |
+          echo "Waiting for SARIF file to be created..."
+          sleep 10
 
       # Upload Dockerfile SARIF results to GitHub
       - name: Upload Dockerfile SARIF results to GitHub
