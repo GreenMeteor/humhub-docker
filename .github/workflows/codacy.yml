@@ -36,6 +36,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+
+      - name: Install codacy-analysis-cli
+        run: |
+          npm install -g codacy-analysis-cli
+
       - name: Run Codacy Analysis for Dockerfile
         run: |
           codacy-analysis-cli analyze --file src/Dockerfile --format sarif --output results_dockerfile.sarif
@@ -60,11 +69,6 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results_dockerfile.sarif
-
-      - name: Upload docker-compose SARIF results to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: results_docker-compose.sarif
 
       - name: Upload docker-compose SARIF results to GitHub
         uses: github/codeql-action/upload-sarif@v3
