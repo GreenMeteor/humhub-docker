@@ -36,12 +36,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create coverage directory
+        run: mkdir -p ${{ github.workspace }}/tests/coverage
+
       - name: Analyze Dockerfile with codacy-analysis-cli
         run: |
-          docker run --rm -v ${{ github.workspace }}:/src codacy/codacy-analysis-cli:stable analyze --directory /src --format sarif --output /src/results_dockerfile.sarif
-      - name: List files for debugging
-        run: |
-          ls -al ${{ github.workspace }}
+          docker run --rm -v ${{ github.workspace }}:/workspace codacy/codacy-analysis-cli:stable analyze --directory /workspace/src --format sarif --output /workspace/tests/coverage/results_dockerfile.sarif
+
+      - name: List files in coverage directory
+        run: ls -al ${{ github.workspace }}/tests/coverage
 
   upload-sarif:
     name: Upload SARIF results
@@ -51,12 +54,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: List files for debugging
-        run: |
-          ls -al ${{ github.workspace }}
-      
-      # Upload Dockerfile SARIF results to GitHub
+      - name: List files in coverage directory
+        run: ls -al ${{ github.workspace }}/tests/coverage
+
+      # Example: Upload Dockerfile SARIF results to GitHub
       - name: Upload Dockerfile SARIF results to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: ${{ github.workspace }}/results_dockerfile.sarif
+          sarif_file: ${{ github.workspace }}/tests/coverage/results_dockerfile.sarif
+
+      # Example: Upload codebase SARIF results to GitHub
+      - name: Upload codebase SARIF results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ github.workspace }}/tests/coverage/results_codebase.sarif
