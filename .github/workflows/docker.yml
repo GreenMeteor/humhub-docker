@@ -49,7 +49,6 @@ jobs:
           tags: |
             type=ref,event=branch,pattern=main
             type=ref,event=branch,pattern=.*
-            type=sha
 
       # Build and push Docker image with Buildx
       # (don't push on PR, load instead)
