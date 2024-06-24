@@ -54,16 +54,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create coverage directory (ensure it exists)
+        run: mkdir -p ${{ github.workspace }}/tests/coverage
+
+      # List files in coverage directory (debugging step)
       - name: List files in coverage directory
         run: ls -al ${{ github.workspace }}/tests/coverage
 
-      # Example: Upload Dockerfile SARIF results to GitHub
+      # Upload Dockerfile SARIF results to GitHub
       - name: Upload Dockerfile SARIF results to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ github.workspace }}/tests/coverage/results_dockerfile.sarif
 
-      # Example: Upload codebase SARIF results to GitHub
+      # Upload codebase SARIF results to GitHub
       - name: Upload codebase SARIF results to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
