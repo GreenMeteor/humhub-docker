@@ -57,9 +57,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Upload Dockerfile SARIF results to GitHub
-        uses: codacy/codacy-analysis-cli-action@d840f886c4bd4edc059706d09c6a1586111c540b
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results_dockerfile.sarif
+
+      - name: Upload docker-compose SARIF results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results_docker-compose.sarif
 
       - name: Upload docker-compose SARIF results to GitHub
         uses: github/codeql-action/upload-sarif@v3
