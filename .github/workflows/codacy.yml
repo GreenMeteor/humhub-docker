@@ -62,12 +62,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Run tests and generate coverage report (replace with your specific commands)
+      # Replace the "Run tests and generate coverage report" step with:
       - name: Run tests and generate coverage report
         run: |
-          # Replace with your commands to run tests and generate coverage report
+          # cd tests  # Adjust this to your actual directory structure
+          npm install
           npm test --coverage
-          # Adjust commands based on your specific setup to generate report.xml
 
       # Upload the coverage report to Codacy
       - name: Upload coverage report to Codacy
