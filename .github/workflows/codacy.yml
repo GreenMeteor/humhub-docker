@@ -27,33 +27,43 @@ permissions:
 jobs:
   codacy-security-scan:
     permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      contents: read
+      security-events: write
+      actions: read
     name: Codacy Security Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install codacy-analysis-cli from GitHub
+      - name: Install Hadolint
         run: |
-          curl -L https://github.com/codacy/codacy-analysis-cli/archive/master.tar.gz | tar xvz
-          cd codacy-analysis-cli-* && sudo make install
+          wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.7.0/hadolint-Linux-x86_64
+          chmod +x /bin/hadolint
 
-      - name: Run Codacy Analysis for Dockerfile
+      - name: Run Hadolint for Dockerfile
         working-directory: src
         run: |
-          codacy-analysis-cli analyze -t dockerfile --output ../results_dockerfile.sarif
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          hadolint Dockerfile -f json > ../results_dockerfile.sarif
 
-      - name: Run Codacy Analysis for docker-compose.yml
+      - name: Convert Hadolint JSON to SARIF
+        run: |
+          npm install -g hadolint2sarif
+          hadolint2sarif -i ../results_dockerfile.json -o ../results_dockerfile.sarif
+
+      - name: Install docker-compose-linter
+        run: |
+          pip install docker-compose-linter
+
+      - name: Run docker-compose-linter
         working-directory: src
         run: |
-          codacy-analysis-cli analyze -t docker-compose --output ../results_docker-compose.sarif
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          docker-compose-linter -f docker-compose.yml > ../results_docker-compose.json
+
+      - name: Convert docker-compose JSON to SARIF
+        run: |
+          npm install -g json2sarif
+          json2sarif -i ../results_docker-compose.json -o ../results_docker-compose.sarif
 
   upload-sarif:
     name: Upload SARIF results
