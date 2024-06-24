@@ -52,16 +52,11 @@ jobs:
           sarif_file: results.sarif
 
   upload-coverage-report:
-    name: Upload Coverage Report to Codacy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Upload coverage report to Codacy
-        uses: codacy/codacy-coverage-reporter-action@v1.3.0
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          file: tests/coverage/report.xml  # Adjust this path based on your setup
-          # Add the following line to specify the report file
-          coverage-reports: "tests/coverage/report.xml"
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report --project-token ${{ secrets.CODACY_PROJECT_TOKEN }} -r tests/coverage/report.xml --partial
