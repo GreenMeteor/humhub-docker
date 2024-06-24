@@ -3,22 +3,21 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-# This workflow checks out code, performs a Codacy security scan
-# and integrates the results with the
-# GitHub Advanced Security code scanning feature.  For more information on
-# the Codacy security scan action usage and parameters, see
-# https://github.com/codacy/codacy-analysis-cli-action.
+# This workflow checks out code, runs tests, generates a coverage report,
+# performs a Codacy security scan, and integrates the results with GitHub
+# Advanced Security for code scanning. For more information on the Codacy
+# security scan action usage and parameters, see
+# https://github.com/codacy/codacy-coverage-reporter-action.
 # For more information on Codacy Analysis CLI in general, see
-# https://github.com/codacy/codacy-analysis-cli.
+# https://github.com/codacy/codacy-coverage-reporter-action.
 
-name: Codacy Security Scan
+name: Codacy Security Scan and Coverage Report
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: [ main ]
   schedule:
     - cron: '43 23 * * 5'
 
@@ -42,16 +41,11 @@ jobs:
       - name: Run Codacy Analysis CLI
         uses: codacy/codacy-analysis-cli-action@d840f886c4bd4edc059706d09c6a1586111c540b
         with:
-          # Check https://github.com/codacy/codacy-analysis-cli#project-token to get your project token from your Codacy repository
-          # You can also omit the token and run the tools that support default configurations
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           verbose: true
           output: results.sarif
           format: sarif
-          # Adjust severity of non-security issues
           gh-code-scanning-compat: true
-          # Force 0 exit code to allow SARIF file generation
-          # This will handover control about PR rejection to the GitHub side
           max-allowed-issues: 2147483647
 
       # Upload the SARIF file generated in the previous step
@@ -60,8 +54,24 @@ jobs:
         with:
           sarif_file: results.sarif
 
-      - name: Codacy Coverage Reporter
+  coverage-report:
+    name: Generate and Upload Coverage Report to Codacy
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Run tests and generate coverage report (replace with your specific commands)
+      - name: Run tests and generate coverage report
+        run: |
+          # Replace with your commands to run tests and generate coverage report
+          npm test --coverage
+          # Adjust commands based on your specific setup to generate report.xml
+
+      # Upload the coverage report to Codacy
+      - name: Upload coverage report to Codacy
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          report-path: /tests/coverage/report.xml
+          file: /tests/coverage/report.xml
