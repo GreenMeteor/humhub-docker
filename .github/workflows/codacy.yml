@@ -33,11 +33,9 @@ jobs:
     name: Codacy Security Scan
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository to the GitHub Actions runner
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Execute Codacy Analysis CLI and generate a SARIF output with the security issues identified during the analysis
       - name: Run Codacy Analysis CLI
         uses: codacy/codacy-analysis-cli-action@d840f886c4bd4edc059706d09c6a1586111c540b
         with:
@@ -48,28 +46,18 @@ jobs:
           gh-code-scanning-compat: true
           max-allowed-issues: 2147483647
 
-      # Upload the SARIF file generated in the previous step
       - name: Upload SARIF results file
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
 
-  coverage-report:
-    name: Generate and Upload Coverage Report to Codacy
+  upload-coverage-report:
+    name: Upload Coverage Report to Codacy
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository to the GitHub Actions runner
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Replace the "Run tests and generate coverage report" step with:
-      - name: Run tests and generate coverage report
-        run: |
-          # cd tests  # Adjust this to your actual directory structure
-          npm install
-          npm test --coverage
-
-      # Upload the coverage report to Codacy
       - name: Upload coverage report to Codacy
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
         with:
