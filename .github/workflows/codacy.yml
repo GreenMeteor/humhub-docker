@@ -38,8 +38,9 @@ jobs:
 
       - name: Install Codacy Analysis CLI
         run: |
-          sudo apt-get update && sudo apt-get install -y make
-          curl -L https://github.com/codacy/codacy-analysis-cli/releases/download/3.0.0/codacy-analysis-cli-3.0.0-linux-x86_64.tar.gz | tar xvz
+          sudo apt-get update && sudo apt-get install -y curl make
+          curl -L https://github.com/codacy/codacy-analysis-cli/releases/download/3.0.0/codacy-analysis-cli-3.0.0-linux-x86_64.tar.gz --output codacy-analysis-cli.tar.gz
+          tar xvzf codacy-analysis-cli.tar.gz
           sudo mv codacy-analysis-cli-3.0.0/bin/codacy-analysis-cli /usr/local/bin/
           codacy-analysis-cli --version  # Verify installation
 
