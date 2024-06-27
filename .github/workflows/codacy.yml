@@ -3,22 +3,21 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-# This workflow checks out code, performs a Codacy security scan
-# and integrates the results with the
-# GitHub Advanced Security code scanning feature.  For more information on
-# the Codacy security scan action usage and parameters, see
-# https://github.com/codacy/codacy-analysis-cli-action.
+# This workflow checks out code, runs tests, generates a coverage report,
+# performs a Codacy security scan, and integrates the results with GitHub
+# Advanced Security for code scanning. For more information on the Codacy
+# security scan action usage and parameters, see
+# https://github.com/codacy/codacy-coverage-reporter-action.
 # For more information on Codacy Analysis CLI in general, see
-# https://github.com/codacy/codacy-analysis-cli.
+# https://github.com/codacy/codacy-coverage-reporter-action.
 
-name: Codacy Security Scan
+name: Codacy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: [ main ]
   schedule:
     - cron: '43 23 * * 5'
 
@@ -28,34 +27,63 @@ permissions:
 jobs:
   codacy-security-scan:
     permissions:
-      contents: read # for actions/checkout to fetch code
-      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      contents: read
+      security-events: write
+      actions: read
     name: Codacy Security Scan
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repository to the GitHub Actions runner
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Execute Codacy Analysis CLI and generate a SARIF output with the security issues identified during the analysis
-      - name: Run Codacy Analysis CLI
-        uses: codacy/codacy-analysis-cli-action@d840f886c4bd4edc059706d09c6a1586111c540b
-        with:
-          # Check https://github.com/codacy/codacy-analysis-cli#project-token to get your project token from your Codacy repository
-          # You can also omit the token and run the tools that support default configurations
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          verbose: true
-          output: results.sarif
-          format: sarif
-          # Adjust severity of non-security issues
-          gh-code-scanning-compat: true
-          # Force 0 exit code to allow SARIF file generation
-          # This will handover control about PR rejection to the GitHub side
-          max-allowed-issues: 2147483647
+      - name: Install Codacy Analysis CLI
+        run: |
+          sudo apt-get update && sudo apt-get install -y curl make
+          curl -L https://github.com/codacy/codacy-analysis-cli/releases/download/3.0.0/codacy-analysis-cli-3.0.0-linux-x86_64.tar.gz --output codacy-analysis-cli.tar.gz
+          tar xvzf codacy-analysis-cli.tar.gz
+          sudo mv codacy-analysis-cli-3.0.0/bin/codacy-analysis-cli /usr/local/bin/
+          codacy-analysis-cli --version  # Verify installation
 
-      # Upload the SARIF file generated in the previous step
-      - name: Upload SARIF results file
-        uses: github/codeql-action/upload-sarif@v2
+      - name: Create coverage directory (ensure it exists)
+        run: mkdir -p ${{ github.workspace }}/tests/coverage
+
+      - name: Run tests and generate coverage reports
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace codacy/codacy-analysis-cli:stable analyze --directory /workspace/src --format sarif --output /workspace/tests/coverage/results_dockerfile.sarif
+
+      - name: Upload coverage reports to Codacy
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: |
+          codacy-coverage-reporter report -l <format> -r ${{ github.workspace }}/tests/coverage/results_dockerfile.sarif
+
+  upload-sarif:
+    name: Upload SARIF results
+    runs-on: ubuntu-latest
+    needs: codacy-security-scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create coverage directory (ensure it exists)
+        run: mkdir -p ${{ github.workspace }}/tests/coverage
+
+      - name: List files in coverage directory (debugging step)
+        run: ls -al ${{ github.workspace }}/tests/coverage
+
+      - name: Wait for SARIF file to be created
+        run: |
+          echo "Waiting for SARIF file to be created..."
+          sleep 10
+
+      # Upload Dockerfile SARIF results to GitHub
+      - name: Upload Dockerfile SARIF results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: results.sarif
+          sarif_file: ${{ github.workspace }}/tests/coverage/results_dockerfile.sarif
+
+      # Upload codebase SARIF results to GitHub
+      - name: Upload codebase SARIF results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ github.workspace }}/tests/coverage/results_codebase.sarif

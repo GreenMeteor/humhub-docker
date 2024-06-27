@@ -19,7 +19,7 @@ RUN apt-get update && \
     pecl install apcu && \
     docker-php-ext-enable apcu && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql && \
+    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql mbstring && \
     a2enmod rewrite && \
     a2enmod deflate && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
