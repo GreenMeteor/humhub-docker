@@ -26,7 +26,7 @@ RUN apt-get update && \
 
 # Download and install HumHub
 WORKDIR /tmp
-ARG HUMHUB_VERSION=1.16.0
+ARG HUMHUB_VERSION=1.16.1
 RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-${HUMHUB_VERSION}.zip && \
     unzip humhub.zip -d /tmp/humhub_folder && \
     rm humhub.zip
