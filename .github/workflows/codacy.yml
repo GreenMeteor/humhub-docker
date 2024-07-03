@@ -42,8 +42,7 @@ jobs:
         run: composer require --dev phpunit/phpunit
 
       - name: Run PHPUnit with coverage
-        run: |
-          ./vendor/bin/phpunit --coverage-clover=coverage.xml
+        run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
 
       - name: Upload coverage reports to Codacy
         env:
