@@ -16,12 +16,15 @@ class DockerfileTest extends TestCase
         $this->assertFileExists($dockerfilePath, 'Dockerfile not found.');
 
         // Build Docker image
-        $output = shell_exec("docker build -t humhub-docker -f $dockerfilePath .");
+        $output = shell_exec("docker build -t humhub-docker -f $dockerfilePath . 2>&1");
 
         // Check if image build was successful
-        $this->assertStringContainsString('Successfully built', $output);
+        $this->assertStringContainsString('Successfully built', $output, 'Docker build failed: ' . $output);
 
         // Clean up: remove test image
-        shell_exec("docker rmi humhub-docker");
+        $cleanupOutput = shell_exec("docker rmi humhub-docker 2>&1");
+        if ($cleanupOutput !== null) {
+            echo "Cleanup output: " . $cleanupOutput . "\n";
+        }
     }
 }
