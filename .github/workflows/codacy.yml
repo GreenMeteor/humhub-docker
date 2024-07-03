@@ -40,7 +40,9 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y curl make jq
           latest_release=$(curl --silent "https://api.github.com/repos/codacy/codacy-analysis-cli/releases/latest" | jq -r .tag_name)
-          curl -L "https://github.com/codacy/codacy-analysis-cli/releases/download/${latest_release}/codacy-analysis-cli-${latest_release}-linux-x86_64.tar.gz" --output codacy-analysis-cli.tar.gz
+          download_url="https://github.com/codacy/codacy-analysis-cli/releases/download/${latest_release}/codacy-analysis-cli-${latest_release}-linux-x86_64.tgz"
+          curl -L $download_url --output codacy-analysis-cli.tar.gz
+          file codacy-analysis-cli.tar.gz
           tar xvzf codacy-analysis-cli.tar.gz || (cat codacy-analysis-cli.tar.gz && exit 1)
           sudo mv codacy-analysis-cli-${latest_release}/bin/codacy-analysis-cli /usr/local/bin/
           codacy-analysis-cli --version  # Verify installation
@@ -79,7 +81,6 @@ jobs:
           echo "Waiting for SARIF file to be created..."
           sleep 10
 
-      # Upload SARIF results to GitHub
       - name: Upload SARIF results to GitHub
         uses: github/codeql-action/upload-sarif@v3
         with:
