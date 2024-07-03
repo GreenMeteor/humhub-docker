@@ -38,8 +38,10 @@ jobs:
           php-version: '8.1'
           tools: composer
 
-      - name: Install PHPUnit
-        run: composer require --dev phpunit/phpunit
+      - name: Install PHPUnit and migrate configuration
+        run: |
+          composer require --dev phpunit/phpunit
+          ./vendor/bin/phpunit --migrate-configuration
 
       - name: Run PHPUnit with coverage
         run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
