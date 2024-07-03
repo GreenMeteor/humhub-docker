@@ -11,13 +11,13 @@
 # For more information on Codacy Analysis CLI in general, see
 # https://github.com/codacy/codacy-coverage-reporter-action.
 
-name: Codacy
+name: Codacy Coverage
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
     - cron: '43 23 * * 5'
 
@@ -25,63 +25,26 @@ permissions:
   contents: read
 
 jobs:
-  codacy-security-scan:
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-    name: Codacy Security Scan
+  codacy-coverage:
+    name: Codacy Coverage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Codacy Analysis CLI
-        run: |
-          sudo apt-get update && sudo apt-get install -y curl make jq
-          latest_release=$(curl --silent "https://api.github.com/repos/codacy/codacy-analysis-cli/releases/latest" | jq -r .tag_name)
-          download_url="https://github.com/codacy/codacy-analysis-cli/releases/download/${latest_release}/codacy-analysis-cli-${latest_release}-linux-x86_64.tgz"
-          curl -L $download_url --output codacy-analysis-cli.tar.gz
-          file codacy-analysis-cli.tar.gz
-          tar xvzf codacy-analysis-cli.tar.gz || (cat codacy-analysis-cli.tar.gz && exit 1)
-          sudo mv codacy-analysis-cli-${latest_release}/bin/codacy-analysis-cli /usr/local/bin/
-          codacy-analysis-cli --version  # Verify installation
+      - name: Install PHP and dependencies
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: phpunit
 
-      - name: Create coverage directory (ensure it exists)
-        run: mkdir -p ${{ github.workspace }}/tests/coverage
-
-      - name: Run Codacy analysis
+      - name: Run PHPUnit with coverage
         run: |
-          codacy-analysis-cli analyze --directory ${{ github.workspace }} --format sarif --output ${{ github.workspace }}/tests/coverage/results_codebase.sarif
+          ./vendor/bin/phpunit --coverage-clover=coverage.xml
 
       - name: Upload coverage reports to Codacy
         env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
-          curl -L https://github.com/codacy/codacy-coverage-reporter/releases/latest/download/codacy-coverage-reporter-linux --output codacy-coverage-reporter
-          chmod +x codacy-coverage-reporter
-          ./codacy-coverage-reporter report -r ${{ github.workspace }}/tests/coverage/results_codebase.sarif
-
-  upload-sarif:
-    name: Upload SARIF results
-    runs-on: ubuntu-latest
-    needs: codacy-security-scan
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Create coverage directory (ensure it exists)
-        run: mkdir -p ${{ github.workspace }}/tests/coverage
-
-      - name: List files in coverage directory (debugging step)
-        run: ls -al ${{ github.workspace }}/tests/coverage
-
-      - name: Wait for SARIF file to be created
-        run: |
-          echo "Waiting for SARIF file to be created..."
-          sleep 10
-
-      - name: Upload SARIF results to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ${{ github.workspace }}/tests/coverage/results_codebase.sarif
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+            -r coverage.xml
