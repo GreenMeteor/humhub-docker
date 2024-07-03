@@ -15,9 +15,9 @@ name: Codacy Coverage
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
   schedule:
     - cron: '43 23 * * 5'
 
@@ -32,11 +32,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install PHP and dependencies
+      - name: Install PHP and Composer
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-          tools: phpunit
+          tools: composer
+
+      - name: Install PHPUnit
+        run: composer require --dev phpunit/phpunit
 
       - name: Run PHPUnit with coverage
         run: |
