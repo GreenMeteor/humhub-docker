@@ -1,8 +1,9 @@
 name: Docker
 
 on:
+  release:
+    types: [published]
   push:
-    tags: ["*"]
     branches:
       - "main"
       - "*"
@@ -46,9 +47,10 @@ jobs:
           labels: |
             org.opencontainers.image.source=${{ github.repositoryUrl }}
             org.opencontainers.image.revision=${{ env.SHA }}
-          tags: |
-            type=ref,event=branch,pattern=main
-            type=ref,event=branch,pattern=.*
+          tags: ${{ github.event.release.tag_name }}
+          flavor: |
+            latest=true
+            prefix=semver,pattern={{version}}
 
       # Build and push Docker image with Buildx
       # (don't push on PR, load instead)
