@@ -1,17 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow checks out code, runs tests, generates a coverage report,
-# performs a Codacy security scan, and integrates the results with GitHub
-# Advanced Security for code scanning. For more information on the Codacy
-# security scan action usage and parameters, see
-# https://github.com/codacy/codacy-coverage-reporter-action.
-# For more information on Codacy Analysis CLI in general, see
-# https://github.com/codacy/codacy-coverage-reporter-action.
-
-name: Codacy
+name: Codacy Coverage
 
 on:
   push:
@@ -25,65 +12,59 @@ permissions:
   contents: read
 
 jobs:
-  codacy-security-scan:
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
-    name: Codacy Security Scan
+  codacy-coverage:
+    name: Codacy Coverage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Codacy Analysis CLI
-        run: |
-          sudo apt-get update && sudo apt-get install -y curl make
-          curl -L https://github.com/codacy/codacy-analysis-cli/releases/download/3.0.0/codacy-analysis-cli-3.0.0-linux-x86_64.tar.gz --output codacy-analysis-cli.tar.gz
-          tar xvzf codacy-analysis-cli.tar.gz
-          sudo mv codacy-analysis-cli-3.0.0/bin/codacy-analysis-cli /usr/local/bin/
-          codacy-analysis-cli --version  # Verify installation
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Create coverage directory (ensure it exists)
-        run: mkdir -p ${{ github.workspace }}/tests/coverage
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-      - name: Run tests and generate coverage reports
+      - name: Build Docker image
+        run: docker build -t humhub-docker -f src/Dockerfile .
+
+      - name: Start Docker container
+        run: docker run --name humhub-docker -d humhub-docker
+
+      - name: Wait for container to start
         run: |
-          docker run --rm -v ${{ github.workspace }}:/workspace codacy/codacy-analysis-cli:stable analyze --directory /workspace/src --format sarif --output /workspace/tests/coverage/results_dockerfile.sarif
+          retries=0
+          max_retries=30
+          while [ $retries -lt $max_retries ]; do
+            docker inspect humhub-docker --format='{{.State.Status}}' | grep -q "running" && break
+            retries=$((retries+1))
+            sleep 10
+          done
+          if [ $retries -eq $max_retries ]; then
+            echo "Container did not start in time."
+            exit 1
+          fi
+
+      - name: Install dependencies and run tests
+        run: |
+          docker exec humhub-docker composer install
+          docker exec humhub-docker ./vendor/bin/phpunit --migrate-configuration
+          docker exec humhub-docker ./vendor/bin/phpunit --coverage-clover=/tests/coverage.xml
+
+      - name: Copy coverage report from Docker container
+        run: docker cp humhub-docker:/tests/coverage.xml coverage.xml
 
       - name: Upload coverage reports to Codacy
+        if: success() || failure()
         env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
-          codacy-coverage-reporter report -l <format> -r ${{ github.workspace }}/tests/coverage/results_dockerfile.sarif
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml || echo "Failed to upload coverage report"
 
-  upload-sarif:
-    name: Upload SARIF results
-    runs-on: ubuntu-latest
-    needs: codacy-security-scan
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Create coverage directory (ensure it exists)
-        run: mkdir -p ${{ github.workspace }}/tests/coverage
-
-      - name: List files in coverage directory (debugging step)
-        run: ls -al ${{ github.workspace }}/tests/coverage
-
-      - name: Wait for SARIF file to be created
-        run: |
-          echo "Waiting for SARIF file to be created..."
-          sleep 10
-
-      # Upload Dockerfile SARIF results to GitHub
-      - name: Upload Dockerfile SARIF results to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ${{ github.workspace }}/tests/coverage/results_dockerfile.sarif
-
-      # Upload codebase SARIF results to GitHub
-      - name: Upload codebase SARIF results to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ${{ github.workspace }}/tests/coverage/results_codebase.sarif
+      - name: Clean up
+        run: docker rm -f humhub-docker || echo "Failed to clean up container"

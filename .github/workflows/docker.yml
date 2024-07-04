@@ -1,8 +1,9 @@
 name: Docker
 
 on:
+  release:
+    types: [published]
   push:
-    tags: ["*"]
     branches:
       - "main"
       - "*"
@@ -50,6 +51,11 @@ jobs:
             type=ref,event=branch,pattern=main
             type=ref,event=branch,pattern=.*
 
+      - name: Set up release tag
+        id: vars
+        run: echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        if: github.event_name == 'release'
+
       # Build and push Docker image with Buildx
       # (don't push on PR, load instead)
       - name: Build and push Docker image
@@ -62,7 +68,9 @@ jobs:
           provenance: ${{ github.event_name != 'pull_request' }}
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_TAG || 'latest' }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
