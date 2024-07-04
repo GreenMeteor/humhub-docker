@@ -50,11 +50,9 @@ jobs:
             exit 1
           fi
 
-      - name: Install dependencies
-        run: docker exec humhub-docker composer install
-
-      - name: Run tests
+      - name: Install dependencies and run tests
         run: |
+          docker exec humhub-docker composer install
           docker exec humhub-docker ./vendor/bin/phpunit --migrate-configuration
           docker exec humhub-docker ./vendor/bin/phpunit --coverage-clover=/tests/coverage.xml
 
