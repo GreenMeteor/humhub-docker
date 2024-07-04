@@ -15,15 +15,11 @@ RUN apt-get update && \
     libicu-dev \
     libldap2-dev \
     libpq-dev \
-    libonig-dev \
-    libmagickwand-dev && \
+    libonig-dev && \
     pecl install apcu && \
     docker-php-ext-enable apcu && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu && \
-    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap mbstring exif && \
-    pecl install imagick && \
-    docker-php-ext-enable imagick && \
+    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql mbstring && \
     a2enmod rewrite && \
     a2enmod deflate && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
