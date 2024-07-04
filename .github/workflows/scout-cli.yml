@@ -35,7 +35,7 @@ jobs:
             --file /src/Dockerfile \
             --tag humhub-docker:latest \
             --output type=docker \
-            /src
+            .
 
       - name: Install Docker Scout CLI
         run: |
