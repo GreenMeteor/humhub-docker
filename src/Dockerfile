@@ -21,7 +21,7 @@ RUN apt-get update && \
     docker-php-ext-enable apcu && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu && \
-    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql mbstring exif && \
+    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap mbstring exif && \
     pecl install imagick && \
     docker-php-ext-enable imagick && \
     a2enmod rewrite && \
