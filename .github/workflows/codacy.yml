@@ -33,13 +33,13 @@ jobs:
       - name: Build Docker image
         run: docker build -t humhub-docker -f src/Dockerfile .
 
-      - name: Run Docker container
+      - name: Start Docker container
         run: docker run --name humhub-docker -d humhub-docker
 
       - name: Wait for container to start
         run: |
           retries=0
-          max_retries=30  # Adjust the maximum number of retries as needed
+          max_retries=30
           while [ $retries -lt $max_retries ]; do
             docker inspect humhub-docker --format='{{.State.Status}}' | grep -q "running" && break
             retries=$((retries+1))
@@ -50,9 +50,11 @@ jobs:
             exit 1
           fi
 
-      - name: Install dependencies and run tests
+      - name: Install dependencies
+        run: docker exec humhub-docker composer install
+
+      - name: Run tests
         run: |
-          docker exec humhub-docker composer install
           docker exec humhub-docker ./vendor/bin/phpunit --migrate-configuration
           docker exec humhub-docker ./vendor/bin/phpunit --coverage-clover=/tests/coverage.xml
 
