@@ -15,25 +15,29 @@ This Dockerfile sets up a PHP 8.3.8 Apache environment and installs HumHub 1.16.
 
 2. **Dependencies Installation**:
    - Installs necessary packages via `apt-get`.
-   - Configures PHP extensions for `gd`, `mysqli`, `pdo`, `zip`, `intl`, `ldap`, `pgsql`, `apcu`, and more.
+   - Configures PHP extensions for `gd`, `mysqli`, `pdo`, `zip`, `intl`, `ldap`, `pgsql`, `mbstring`, `exif`, `imagick`, `apcu`, and more.
 
-3. **Directory Creation**:
-   - Creates the directory structure: `/var/www/html` for HumHub installation.
-
-4. **HumHub Installation**:
+3. **HumHub Installation**:
    - Downloads HumHub version 1.16.1 using `curl`.
    - Unzips the downloaded file to `/tmp/humhub_folder`.
    - Copies HumHub contents to `/var/www/html`.
    - Adjusts ownership and permissions for `/var/www/html`.
    - Cleans up downloaded files and temporary folders.
 
+4. **Custom Apache Configuration**:
+   - Copies custom Apache configuration files to the appropriate locations.
+   - Enables the custom configuration.
+
 5. **Exposing Ports**:
-   - Exposes port `80` for HTTP traffic.
+   - Exposes ports `80` and `443` for HTTP and HTTPS traffic.
 
 6. **Working Directory**:
    - Sets `/var/www/html` as the working directory.
 
-7. **Starting Service**:
+7. **Healthcheck**:
+   - Includes a healthcheck to monitor the status of the container.
+
+8. **Starting Service**:
    - Initiates the Apache & Cron services using `apache2-foreground` & `service cron start`.
 
 ### Building the Image:
@@ -43,4 +47,5 @@ Build the Docker image using the provided Dockerfile:
 ```bash
 docker build -t humhub-docker .
 ```
+
 If you enjoy our work please consider [donating](https://donate.stripe.com/00g7uJ4gb7UZePu8wM).
