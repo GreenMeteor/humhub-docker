@@ -36,6 +36,9 @@ jobs:
       - name: Run Docker container
         run: docker run --name humhub-docker -d humhub-docker
 
+      - name: Wait for container to start
+        run: sleep 10  # Adjust time as needed based on your container startup time
+
       - name: Install dependencies and run tests
         run: |
           docker exec humhub-docker composer install
