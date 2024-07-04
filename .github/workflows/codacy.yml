@@ -39,24 +39,24 @@ jobs:
           docker run --name humhub-docker -d humhub-docker || echo "Container start failed"
 
       - name: Check container status and logs (if failure)
-        if: steps.run_container.outputs.container == "failed"
+        if: ${{ failure() }}
         run: |
           docker ps -a
           docker logs humhub-docker
 
       - name: Install dependencies and run tests
-        if: success() || steps.run_container.outputs.container != "failed"
+        if: ${{ success() || failure() }}
         run: |
           docker exec humhub-docker composer install || echo "Composer install failed"
           docker exec humhub-docker ./vendor/bin/phpunit --migrate-configuration || echo "PHPUnit configuration migration failed"
           docker exec humhub-docker ./vendor/bin/phpunit --coverage-clover=/tests/coverage.xml || echo "PHPUnit tests failed"
 
       - name: Copy coverage report
-        if: success() || steps.run_container.outputs.container != "failed"
+        if: ${{ success() || failure() }}
         run: docker cp humhub-docker:/tests/coverage.xml coverage.xml || echo "Failed to copy coverage report"
 
       - name: Upload coverage reports to Codacy
-        if: success() || steps.run_container.outputs.container != "failed"
+        if: ${{ success() || failure() }}
         env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
