@@ -31,7 +31,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Build Docker image
-        run: docker build -t humhub-docker -f /src/Dockerfile /src
+        run: docker build -t humhub-docker -f /src/Dockerfile
 
       - name: Run Docker container
         run: |
