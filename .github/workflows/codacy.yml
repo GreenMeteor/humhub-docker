@@ -34,29 +34,19 @@ jobs:
         run: docker build -t humhub-docker -f src/Dockerfile .
 
       - name: Run Docker container
-        id: run_container
-        run: |
-          docker run --name humhub-docker -d humhub-docker || echo "Container start failed"
-
-      - name: Check container status and logs (if failure)
-        if: ${{ failure() }}
-        run: |
-          docker ps -a
-          docker logs humhub-docker
+        run: docker run --name humhub-docker -d humhub-docker
 
       - name: Install dependencies and run tests
-        if: ${{ success() || failure() }}
         run: |
-          docker exec humhub-docker composer install || echo "Composer install failed"
-          docker exec humhub-docker ./vendor/bin/phpunit --migrate-configuration || echo "PHPUnit configuration migration failed"
-          docker exec humhub-docker ./vendor/bin/phpunit --coverage-clover=/tests/coverage.xml || echo "PHPUnit tests failed"
+          docker exec humhub-docker composer install
+          docker exec humhub-docker ./vendor/bin/phpunit --migrate-configuration
+          docker exec humhub-docker ./vendor/bin/phpunit --coverage-clover=/tests/coverage.xml
 
-      - name: Copy coverage report
-        if: ${{ success() || failure() }}
-        run: docker cp humhub-docker:/tests/coverage.xml coverage.xml || echo "Failed to copy coverage report"
+      - name: Copy coverage report from Docker container
+        run: docker cp humhub-docker:/tests/coverage.xml coverage.xml
 
       - name: Upload coverage reports to Codacy
-        if: ${{ success() || failure() }}
+        if: success() || failure()
         env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
