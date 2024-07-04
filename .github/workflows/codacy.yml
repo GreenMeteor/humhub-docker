@@ -1,16 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow checks out code, runs tests, generates a coverage report,
-# performs a Codacy security scan, and integrates the results with GitHub
-# Advanced Security for code scanning. For more information on the Codacy
-# security scan action usage and parameters, see
-# https://github.com/codacy/codacy-coverage-reporter-action.
-# For more information on Codacy Analysis CLI in general, see
-# https://github.com/codacy/codacy-coverage-reporter-action.
-
 name: Codacy Coverage
 
 on:
@@ -32,19 +19,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install PHP and Composer
-        uses: shivammathur/setup-php@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
         with:
-          php-version: '8.1'
-          tools: composer
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-      - name: Install PHPUnit and migrate configuration
+      - name: Build Docker image
+        run: docker build -t humhub-docker -f /src/Dockerfile /src
+
+      - name: Run Docker container
         run: |
-          composer require --dev phpunit/phpunit
-          ./vendor/bin/phpunit --migrate-configuration
+          docker run --name humhub-docker -d humhub-docker
+          docker exec humhub-docker composer install
+          docker exec humhub-docker ./vendor/bin/phpunit --migrate-configuration
+          docker exec humhub-docker ./vendor/bin/phpunit --coverage-clover=/tests/coverage.xml
 
-      - name: Run PHPUnit with coverage
-        run: ./vendor/bin/phpunit --coverage-clover=coverage.xml
+      - name: Copy coverage report
+        run: docker cp humhub-docker:/tests/coverage.xml coverage.xml
 
       - name: Upload coverage reports to Codacy
         env:
@@ -52,3 +49,6 @@ jobs:
         run: |
           bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
             -r coverage.xml
+
+      - name: Clean up
+        run: docker rm -f humhub-docker
