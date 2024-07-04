@@ -37,7 +37,18 @@ jobs:
         run: docker run --name humhub-docker -d humhub-docker
 
       - name: Wait for container to start
-        run: sleep 10  # Adjust time as needed based on your container startup time
+        run: |
+          retries=0
+          max_retries=30  # Adjust the maximum number of retries as needed
+          while [ $retries -lt $max_retries ]; do
+            docker inspect humhub-docker --format='{{.State.Status}}' | grep -q "running" && break
+            retries=$((retries+1))
+            sleep 10
+          done
+          if [ $retries -eq $max_retries ]; then
+            echo "Container did not start in time."
+            exit 1
+          fi
 
       - name: Install dependencies and run tests
         run: |
