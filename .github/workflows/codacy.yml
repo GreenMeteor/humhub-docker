@@ -34,7 +34,7 @@ jobs:
         run: docker build -t humhub-docker -f src/Dockerfile .
 
       - name: Run Docker container
-        run: docker run --name humhub-docker humhub-docker
+        run: docker run --name humhub-docker -d humhub-docker
 
       - name: Inspect container logs (if failure)
         if: failure()
