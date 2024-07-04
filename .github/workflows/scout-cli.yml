@@ -32,9 +32,10 @@ jobs:
       - name: Build Docker image
         run: |
           docker buildx build \
+            --file /src/Dockerfile \
             --tag humhub-docker:latest \
             --output type=docker \
-            .
+            /src
 
       - name: Install Docker Scout CLI
         run: |
@@ -43,6 +44,7 @@ jobs:
 
       - name: Run Docker Scout Analysis
         run: |
+          cd /src
           scout analyze humhub-docker:latest --output json > scan-results.json
 
       - name: Upload Scan Results
