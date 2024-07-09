@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM php:8.3.8-apache AS builder
+FROM php:8.3.9-apache AS builder
 
 # Install build dependencies
 RUN apt-get update && \
@@ -32,7 +32,7 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-$
     rm humhub.zip
 
 # Stage 2: Runtime Dependencies
-FROM php:8.3.8-apache AS runtime-deps
+FROM php:8.3.9-apache AS runtime-deps
 
 # Install runtime dependencies
 RUN apt-get update && \
@@ -45,7 +45,7 @@ FROM runtime-deps AS final
 # Metadata for provenance
 LABEL org.opencontainers.image.source="https://github.com/GreenMeteor/humhub-docker"
 LABEL org.opencontainers.image.revision="$GIT_COMMIT"
-LABEL org.opencontainers.image.base.name="php:8.3.8-apache"
+LABEL org.opencontainers.image.base.name="php:8.3.9-apache"
 
 # Create a non-root user
 RUN groupadd -r humhub && useradd -r -g humhub humhub
