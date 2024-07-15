@@ -1,9 +1,8 @@
 # Stage 1: Builder
 FROM php:8.3.9-apache AS builder
 
-# Install build dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# Install build system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
     libpng-dev \
@@ -15,11 +14,12 @@ RUN apt-get update && \
     libicu-dev \
     libldap2-dev \
     libpq-dev \
-    libonig-dev && \
-    pecl install apcu-5.1.23 && \
-    docker-php-ext-enable apcu && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install -j$(nproc) \
+    libonig-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install and enable PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
     ctype \
     curl \
     dom \
@@ -34,40 +34,49 @@ RUN apt-get update && \
     mysqli \
     pdo \
     pdo_mysql \
-    zip && \
-    a2enmod rewrite && \
-    a2enmod deflate && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    zip \
+    opcache
+
+# Install APCu
+RUN pecl install apcu-5.1.23 && docker-php-ext-enable apcu
+
+# Enable Apache modules
+RUN a2enmod rewrite deflate
 
 # Download and install HumHub
 WORKDIR /tmp
 ARG HUMHUB_VERSION=1.16.1
-RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-${HUMHUB_VERSION}.zip && \
-    unzip humhub.zip -d /tmp/humhub_folder && \
-    rm humhub.zip
+RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-${HUMHUB_VERSION}.zip \
+    && unzip humhub.zip -d /tmp/humhub_folder \
+    && rm humhub.zip
 
-# Stage 2: Runtime Dependencies
-FROM php:8.3.9-apache AS runtime-deps
+# Stage 2: Runtime
+FROM php:8.3.9-apache
+
+# Copy PHP extensions and configurations from builder
+COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
+COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
 
 # Install runtime dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    cron && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpng16-16 \
+    libjpeg62-turbo \
+    libfreetype6 \
+    libzip4 \
+    libicu72 \
+    libldap-2.5-0 \
+    libpq5 \
+    cron \
+    && rm -rf /var/lib/apt/lists/*
 
-# Stage 3: Final
-FROM runtime-deps AS final
-
-# Metadata for provenance
-LABEL org.opencontainers.image.source="https://github.com/GreenMeteor/humhub-docker"
-LABEL org.opencontainers.image.revision="$GIT_COMMIT"
-LABEL org.opencontainers.image.base.name="php:8.3.9-apache"
+# Enable Apache modules
+RUN a2enmod rewrite deflate
 
 # Create a non-root user
 RUN groupadd -r humhub && useradd -r -g humhub humhub
 
 # Copy HumHub from the builder stage
-COPY --from=builder /tmp/humhub_folder/. /var/www/html
+COPY --from=builder /tmp/humhub_folder /var/www/html
 
 # Copy custom Apache configuration files
 COPY src/apache2.conf /etc/apache2/apache2.conf
