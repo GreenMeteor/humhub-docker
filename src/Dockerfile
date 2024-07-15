@@ -16,10 +16,25 @@ RUN apt-get update && \
     libldap2-dev \
     libpq-dev \
     libonig-dev && \
-    pecl install apcu && \
+    pecl install apcu-5.1.23 && \
     docker-php-ext-enable apcu && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql mbstring && \
+    docker-php-ext-install -j$(nproc) \
+    ctype \
+    curl \
+    dom \
+    exif \
+    fileinfo \
+    gd \
+    iconv \
+    intl \
+    json \
+    libxml \
+    mbstring \
+    mysqli \
+    pdo \
+    pdo_mysql \
+    zip && \
     a2enmod rewrite && \
     a2enmod deflate && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -36,7 +51,8 @@ FROM php:8.3.9-apache AS runtime-deps
 
 # Install runtime dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends cron && \
+    apt-get install -y --no-install-recommends \
+    cron && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Stage 3: Final
