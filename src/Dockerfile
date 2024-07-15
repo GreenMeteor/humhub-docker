@@ -16,7 +16,7 @@ RUN apt-get update && \
     libldap2-dev \
     libpq-dev \
     libonig-dev && \
-    pecl install apcu && \
+    pecl install apcu-5.1.23 && \
     docker-php-ext-enable apcu && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql mbstring exif && \
