@@ -82,7 +82,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl --fail http://localhost || exit 1
 
 # Create a startup script
-RUN echo '#!/bin/bash\n\
+RUN printf '#!/bin/bash\n\
 service cron start\n\
 apache2-foreground' > /usr/local/bin/startup.sh && \
     chmod +x /usr/local/bin/startup.sh
