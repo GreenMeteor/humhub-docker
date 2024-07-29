@@ -57,8 +57,9 @@ COPY --from=builder /tmp/humhub_folder/. /var/www/html
 COPY src/apache2.conf /etc/apache2/apache2.conf
 COPY src/humhub.conf /etc/apache2/sites-available/humhub.conf
 
-# Enable the custom configuration
-RUN a2ensite humhub
+# Enable the custom configuration and MPM module
+RUN a2ensite humhub && \
+    a2enmod mpm_prefork
 
 # Set ownership and permissions
 RUN chown -R humhub:humhub /var/www/html && \
@@ -66,7 +67,7 @@ RUN chown -R humhub:humhub /var/www/html && \
     find /var/www/html -type f -exec chmod 644 {} +
 
 # Copy the cron file and set permissions
-COPY --chown=humhub:humhub src/crontab /etc/cron.d/humhub-cron
+COPY --chown=root:root src/crontab /etc/cron.d/humhub-cron
 RUN chmod 0644 /etc/cron.d/humhub-cron
 
 # Expose ports
@@ -80,6 +81,11 @@ WORKDIR /var/www/html
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl --fail http://localhost || exit 1
 
-# Start Apache service and cron in the foreground as non-root user
-USER humhub
-CMD ["sh", "-c", "service cron start && apache2-foreground"]
+# Create a startup script
+RUN echo '#!/bin/bash\n\
+service cron start\n\
+apache2-foreground' > /usr/local/bin/startup.sh && \
+    chmod +x /usr/local/bin/startup.sh
+
+# Start Apache service and cron
+CMD ["/usr/local/bin/startup.sh"]
