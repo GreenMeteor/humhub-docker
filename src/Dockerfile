@@ -59,9 +59,9 @@ COPY src/humhub.conf /etc/apache2/sites-available/humhub.conf
 
 # Explicitly install and enable MPM module
 RUN apt-get update && \
-    apt-get install -y apache2-mpm-prefork && \
-    a2enmod mpm_prefork && \
-    a2dismod mpm_event mpm_worker
+    apt-get install -y apache2 && \
+    a2dismod mpm_event mpm_worker && \
+    a2enmod mpm_prefork
 
 # Enable the custom configuration
 RUN a2ensite humhub
