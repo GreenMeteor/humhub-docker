@@ -21,7 +21,7 @@ jobs:
         with:
           version: "lab:latest"
           driver: cloud
-          endpoint: "archblood/humhub-docker"
+          endpoint: "archblood/humhub-docker/src"
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
