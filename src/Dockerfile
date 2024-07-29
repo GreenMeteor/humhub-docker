@@ -57,9 +57,14 @@ COPY --from=builder /tmp/humhub_folder/. /var/www/html
 COPY src/apache2.conf /etc/apache2/apache2.conf
 COPY src/humhub.conf /etc/apache2/sites-available/humhub.conf
 
-# Enable the custom configuration and MPM module
-RUN a2ensite humhub && \
-    a2enmod mpm_prefork
+# Explicitly install and enable MPM module
+RUN apt-get update && \
+    apt-get install -y apache2-mpm-prefork && \
+    a2enmod mpm_prefork && \
+    a2dismod mpm_event mpm_worker
+
+# Enable the custom configuration
+RUN a2ensite humhub
 
 # Set ownership and permissions
 RUN chown -R humhub:humhub /var/www/html && \
