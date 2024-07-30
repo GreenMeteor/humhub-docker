@@ -18,9 +18,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
         libpq-dev \
         libonig-dev \
         libgmp-dev && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j$(nproc) \
         gd \
         exif \
@@ -34,12 +32,11 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
         pgsql \
         pdo_pgsql \
         mbstring \
-        gmp
-
-RUN pecl install imagick-3.7.0 apcu-5.1.23 && \
+        gmp && \
+    pecl install imagick-3.7.0 apcu-5.1.23 && \
     docker-php-ext-enable imagick apcu && \
     a2enmod rewrite deflate && \
-    rm -rf /tmp/* /var/tmp/*
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Download and install HumHub
 WORKDIR /tmp
@@ -55,7 +52,8 @@ FROM php:8.3.9-apache AS runtime
 # Install runtime dependencies
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
-    apt-get update && apt-get install -y --no-install-recommends \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
         cron \
         libpng16-16 \
         libjpeg62-turbo \
