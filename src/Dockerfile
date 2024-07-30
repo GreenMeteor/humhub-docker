@@ -17,8 +17,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
         libldap2-dev \
         libpq-dev \
         libonig-dev \
-        libgmp-dev \
-        libmagickwand-dev && \
+        libgmp-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
@@ -67,8 +66,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
         libldap-2.5-0 \
         libpq5 \
         libonig5 \
-        libgmp10 \
-        libmagickwand-6.q16-6 && \
+        libgmp10 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy PHP extensions and configurations from builder
