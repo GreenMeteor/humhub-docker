@@ -7,6 +7,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y --no-install-recommends \
         curl \
         unzip \
+        build-essential \
         libpng-dev \
         libjpeg-dev \
         libfreetype6-dev \
@@ -18,9 +19,6 @@ RUN --mount=type=cache,target=/var/cache/apt \
         libpq-dev \
         libonig-dev \
         libgmp-dev \
-        libmagickwand-dev \
-        build-essential \
-        libmagickcore-dev \
         libmagickwand-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
