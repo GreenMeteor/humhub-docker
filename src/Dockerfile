@@ -4,8 +4,7 @@ FROM php:8.3.9-apache AS builder
 # Install build dependencies and PHP extensions
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get update && apt-get install -y --no-install-recommends \
         curl \
         unzip \
         libpng-dev \
@@ -20,9 +19,9 @@ RUN --mount=type=cache,target=/var/cache/apt \
         libonig-dev \
         libgmp-dev \
         libmagickwand-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j$(nproc) \
         gd \
         exif \
@@ -36,8 +35,9 @@ RUN --mount=type=cache,target=/var/cache/apt \
         pgsql \
         pdo_pgsql \
         mbstring \
-        gmp && \
-    pecl install imagick-3.7.0 apcu-5.1.23 && \
+        gmp
+
+RUN pecl install imagick-3.7.0 apcu-5.1.23 && \
     docker-php-ext-enable imagick apcu && \
     a2enmod rewrite deflate && \
     rm -rf /tmp/* /var/tmp/*
@@ -56,22 +56,20 @@ FROM php:8.3.9-apache AS runtime
 # Install runtime dependencies
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get update && apt-get install -y --no-install-recommends \
         cron \
-        libpng-dev \
-        libjpeg62-turbo-dev \
-        libfreetype6-dev \
-        libexif-dev \
-        libzip-dev \
-        libicu-dev \
+        libpng16-16 \
+        libjpeg62-turbo \
+        libfreetype6 \
+        libexif12 \
+        libzip4 \
+        libicu72 \
         libldap-2.5-0 \
-        libpq-dev \
-        libonig-dev \
-        libgmp-dev \
-        libmagickwand-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+        libpq5 \
+        libonig5 \
+        libgmp10 \
+        libmagickwand-6.q16-6 || { echo "Error: Failed to install packages" >&2; exit 1; } && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy PHP extensions and configurations from builder
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
