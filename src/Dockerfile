@@ -17,9 +17,14 @@ RUN --mount=type=cache,target=/var/cache/apt \
         libldap2-dev \
         libpq-dev \
         libonig-dev \
-        libgmp-dev && \
+        libgmp-dev \
+        libmagickwand-dev \
+        build-essential \
+        libmagickcore-dev \
+        libmagickwand-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Configure and install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install -j$(nproc) \
         gd \
@@ -36,7 +41,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
         mbstring \
         gmp
 
-RUN pecl install imagick-3.7.0 apcu-5.1.23 && \
+# Install PECL extensions
+RUN pecl install imagick apcu && \
     docker-php-ext-enable imagick apcu && \
     a2enmod rewrite deflate && \
     rm -rf /tmp/* /var/tmp/*
