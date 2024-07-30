@@ -51,7 +51,7 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-$
     rm -rf /tmp/* /var/tmp/*
 
 # Stage 2: Runtime
-FROM php:8.3.9-apache-runtime-deps AS runtime
+FROM php:8.3.9-apache AS runtime
 
 # Install runtime dependencies
 RUN --mount=type=cache,target=/var/cache/apt \
@@ -83,7 +83,7 @@ RUN a2enmod rewrite deflate && \
 # Metadata
 LABEL org.opencontainers.image.source="https://github.com/GreenMeteor/humhub-docker"
 LABEL org.opencontainers.image.revision="${GIT_COMMIT}"
-LABEL org.opencontainers.image.base.name="php:8.3.9-apache-runtime-deps"
+LABEL org.opencontainers.image.base.name="php:8.3.9-apache"
 
 # Create a non-root user
 RUN groupadd -r humhub && useradd -r -g humhub humhub
