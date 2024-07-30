@@ -67,6 +67,22 @@ RUN --mount=type=cache,target=/var/cache/apt \
         libgmp10 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Add debugging
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+        cron \
+        libpng16-16 \
+        libjpeg62-turbo \
+        libfreetype6 \
+        libexif12 \
+        libzip4 \
+        libicu72 \
+        libldap-2.5-0 \
+        libpq5 \
+        libonig5 \
+        libgmp10 || { echo "Error installing packages"; exit 1; } && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Copy PHP extensions and configurations from builder
 COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
