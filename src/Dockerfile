@@ -2,7 +2,7 @@
 FROM php:8.3.9-apache AS builder
 
 # Install build dependencies
-RUN apt-get update && \
+RUN apt-get update --no-install-recommends && \
     apt-get install -y --no-install-recommends \
     curl \
     unzip \
@@ -35,7 +35,7 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-$
 FROM php:8.3.9-apache AS runtime-deps
 
 # Install runtime dependencies
-RUN apt-get update && \
+RUN apt-get update --no-install-recommends && \
     apt-get install -y --no-install-recommends cron && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -58,7 +58,7 @@ COPY src/apache2.conf /etc/apache2/apache2.conf
 COPY src/humhub.conf /etc/apache2/sites-available/humhub.conf
 
 # Explicitly install and enable MPM module
-RUN apt-get update && \
+RUN apt-get update --no-install-recommends && \
     apt-get install -y apache2 && \
     a2dismod mpm_event mpm_worker && \
     a2enmod mpm_prefork
