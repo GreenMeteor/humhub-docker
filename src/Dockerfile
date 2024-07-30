@@ -19,10 +19,10 @@ RUN apt-get update --no-install-recommends && \
     pecl install apcu-5.1.23 && \
     docker-php-ext-enable apcu && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql mbstring exif && \
-    a2enmod rewrite && \
-    a2enmod deflate && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    docker-php-ext-install -j$(nproc) gd mysqli pdo pdo_mysql zip intl ldap pgsql pdo_pgsql mbstring exif
+
+# Clean up APT cache and remove temporary files
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download and install HumHub
 WORKDIR /tmp
@@ -36,8 +36,10 @@ FROM php:8.3.9-apache AS runtime-deps
 
 # Install runtime dependencies
 RUN apt-get update --no-install-recommends && \
-    apt-get install -y --no-install-recommends cron && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends cron
+
+# Clean up APT cache and remove temporary files
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Stage 3: Final
 FROM runtime-deps AS final
@@ -62,6 +64,9 @@ RUN apt-get update --no-install-recommends && \
     apt-get install -y apache2 && \
     a2dismod mpm_event mpm_worker && \
     a2enmod mpm_prefork
+
+# Clean up APT cache and remove temporary files
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Enable the custom configuration
 RUN a2ensite humhub
