@@ -51,24 +51,24 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-$
     rm -rf /tmp/* /var/tmp/*
 
 # Stage 2: Runtime
-FROM php:8.3.9-apache AS runtime
+FROM php:8.3.9-apache-runtime-deps AS runtime
 
-# Install runtime dependencies one by one with debug information
+# Install runtime dependencies
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
-    apt-get update && \
-    apt-get install -y --no-install-recommends cron || { echo "Error: Failed to install cron" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libpng16-16 || { echo "Error: Failed to install libpng16-16" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libjpeg62-turbo || { echo "Error: Failed to install libjpeg62-turbo" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libfreetype6 || { echo "Error: Failed to install libfreetype6" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libexif12 || { echo "Error: Failed to install libexif12" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libzip4 || { echo "Error: Failed to install libzip4" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libicu72 || { echo "Error: Failed to install libicu72" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libldap-2.5-0 || { echo "Error: Failed to install libldap-2.5-0" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libpq5 || { echo "Error: Failed to install libpq5" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libonig5 || { echo "Error: Failed to install libonig5" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libgmp10 || { echo "Error: Failed to install libgmp10" >&2; exit 1; } && \
-    apt-get install -y --no-install-recommends libmagickwand-6.q16-6 || { echo "Error: Failed to install libmagickwand-6.q16-6" >&2; exit 1; } && \
+    apt-get update && apt-get install -y --no-install-recommends \
+        cron \
+        libpng16-16 \
+        libjpeg62-turbo \
+        libfreetype6 \
+        libexif12 \
+        libzip4 \
+        libicu72 \
+        libldap-2.5-0 \
+        libpq5 \
+        libonig5 \
+        libgmp10 \
+        libmagickwand-6.q16-6 && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy PHP extensions and configurations from builder
@@ -83,7 +83,7 @@ RUN a2enmod rewrite deflate && \
 # Metadata
 LABEL org.opencontainers.image.source="https://github.com/GreenMeteor/humhub-docker"
 LABEL org.opencontainers.image.revision="${GIT_COMMIT}"
-LABEL org.opencontainers.image.base.name="php:8.3.9-apache"
+LABEL org.opencontainers.image.base.name="php:8.3.9-apache-runtime-deps"
 
 # Create a non-root user
 RUN groupadd -r humhub && useradd -r -g humhub humhub
