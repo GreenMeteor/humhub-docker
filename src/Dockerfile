@@ -59,17 +59,17 @@ RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         cron \
-        libpng16-16 \
-        libjpeg62-turbo \
-        libfreetype6 \
-        libexif12 \
-        libzip4 \
-        libicu72 \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        libexif-dev \
+        libzip-dev \
+        libicu-dev \
         libldap-2.5-0 \
-        libpq5 \
-        libonig5 \
-        libgmp10 \
-        libmagickwand-6.q16-6 && \
+        libpq-dev \
+        libonig-dev \
+        libgmp-dev \
+        libmagickwand-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
