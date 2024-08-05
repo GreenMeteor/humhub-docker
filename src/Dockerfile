@@ -1,5 +1,5 @@
 # Stage 1: Builder
-FROM php:8.3.9-apache AS builder
+FROM php:8.3.10-apache AS builder
 
 # Install build dependencies
 RUN apt-get update --no-install-recommends && \
@@ -32,7 +32,7 @@ RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-$
     rm humhub.zip
 
 # Stage 2: Runtime Dependencies
-FROM php:8.3.9-apache AS runtime-deps
+FROM php:8.3.10-apache AS runtime-deps
 
 # Install runtime dependencies
 RUN apt-get update --no-install-recommends && \
