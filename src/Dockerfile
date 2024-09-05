@@ -26,7 +26,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download and install HumHub
 WORKDIR /tmp
-ARG HUMHUB_VERSION=1.16.1
+ARG HUMHUB_VERSION=1.16.2
 RUN curl -L -o humhub.zip https://download.humhub.com/downloads/install/humhub-${HUMHUB_VERSION}.zip && \
     unzip humhub.zip -d /tmp/humhub_folder && \
     rm humhub.zip
@@ -47,7 +47,7 @@ FROM runtime-deps AS final
 # Metadata for provenance
 LABEL org.opencontainers.image.source="https://github.com/GreenMeteor/humhub-docker"
 LABEL org.opencontainers.image.revision="$GIT_COMMIT"
-LABEL org.opencontainers.image.base.name="php:8.3.9-apache"
+LABEL org.opencontainers.image.base.name="php:8.3.11-apache"
 
 # Create a non-root user
 RUN groupadd -r humhub && useradd -r -g humhub humhub
