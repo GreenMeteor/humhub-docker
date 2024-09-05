@@ -2,6 +2,9 @@
 
 This Dockerfile sets up a PHP 8.3.11 Apache environment and installs HumHub 1.16.1.
 
+> [!IMPORTANT]
+> This Dockerfile & the Docker Image that is created will be discontinued as of September 12th 2024.
+
 ### Dockerfiles
 | Operating Systems | Status |
 |-------------------|--------|
