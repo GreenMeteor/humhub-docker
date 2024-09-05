@@ -1,6 +1,6 @@
 # Dockerfile for HumHub Installation
 
-This Dockerfile sets up a PHP 8.3.11 Apache environment and installs HumHub 1.16.1.
+This Dockerfile sets up a PHP 8.3.11 Apache environment and installs HumHub 1.16.2.
 
 > [!IMPORTANT]
 > This Dockerfile & the Docker Image that is created will be discontinued as of September 12th 2024.
@@ -21,7 +21,7 @@ This Dockerfile sets up a PHP 8.3.11 Apache environment and installs HumHub 1.16
    - Configures PHP extensions for `gd`, `mysqli`, `pdo`, `zip`, `intl`, `ldap`, `pgsql`, `mbstring`, `exif`, `imagick`, `apcu`, and more.
 
 3. **HumHub Installation**:
-   - Downloads HumHub version 1.16.1 using `curl`.
+   - Downloads HumHub version 1.16.2 using `curl`.
    - Unzips the downloaded file to `/tmp/humhub_folder`.
    - Copies HumHub contents to `/var/www/html`.
    - Adjusts ownership and permissions for `/var/www/html`.
